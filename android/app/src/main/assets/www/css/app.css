@@ -551,6 +551,50 @@ body:not(.in-hub) #btn-back-hub {
   height: 20px;
 }
 
+/* == Odporność treści na wyjście poza box i "czerwone ściany" KaTeX == */
+/* Błąd parsowania wzoru nie może malować całych zdań na czerwono */
+.katex-error,
+.katex .katex-error {
+  color: inherit;
+}
+
+/* Żaden tekst/wzór nie wychodzi poza swój kontener — przewijanie zamiast wycieku */
+.task-question-box,
+.q-math-display,
+.formula-math-display,
+#dt-flash-answer,
+.sol-content,
+.feedback-explanation {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.task-question-box,
+.question-text,
+.material-body,
+#dt-flash-answer,
+.sol-content {
+  overflow-wrap: anywhere;
+}
+
+.q-math-display .katex-display,
+.formula-math-display .katex-display,
+.material-body .katex-display,
+#dt-flash-answer .katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Tabele materiałów przewijane poziomo zamiast rozpychać kartę */
+.material-table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 /* MODULE 7: MATERIAŁY — teoria i zadania w stylu Trygonometrii */
 .material-toolbar {
   display: flex;
@@ -2280,6 +2324,35 @@ body:not(.in-hub) #btn-back-hub {
   background: rgba(239, 68, 68, 0.22);
   border-color: #ef4444;
   color: #f87171;
+}
+
+/* Samocena fiszek w trenerze działowym */
+.quiz-option-btn.dt-yes {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(16, 185, 129, 0.5);
+  color: #34d399;
+  font-weight: 700;
+}
+
+.quiz-option-btn.dt-yes:active {
+  background: rgba(16, 185, 129, 0.3);
+}
+
+.quiz-option-btn.dt-no {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #f87171;
+  font-weight: 700;
+}
+
+.quiz-option-btn.dt-no:active {
+  background: rgba(239, 68, 68, 0.28);
+}
+
+.quiz-option-btn.dt-yes svg,
+.quiz-option-btn.dt-no svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* COMPACT FEEDBACK PANEL WITH CHIBI REACTION */

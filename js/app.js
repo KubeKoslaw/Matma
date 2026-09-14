@@ -1,7 +1,9 @@
 // js/app.js - Główny kontroler aplikacji Trygonometria
 
+import { MODULES as MATERIAL_MODULES } from "./data/materials-manifest.js";
 import { initHub } from "./modules/hub.js";
 import { initMaterialy, showMaterial, materialShowTab } from "./modules/materialy.js";
+import { initDzialTrainer } from "./modules/dzialTrainer.js";
 import { initUnitCircle } from "./modules/unitCircle.js";
 import { initTableViewer } from "./modules/tableViewer.js";
 import { initFormulaVerifier } from "./modules/formulaVerifier.js";
@@ -58,6 +60,11 @@ document.addEventListener("DOMContentLoaded", () => {
   initTaskViewer("view-tasks");
   initTrainer("view-trainer");
   initCalculators("view-calculators");
+  initDzialTrainer(
+    "view-dzial-trainer",
+    "geometria-analityczna",
+    async () => (await import(DZIAL_MATERIALS["geometria-analityczna"].module)).default
+  );
 
   // 3. Konfiguracja powrotu do menu (dolna nawigacja renderuje się per dział
   //    w openDzial — wzorzec Trygonometrii)
@@ -93,10 +100,10 @@ const DZIAL_TITLES = {
 };
 
 // Materiały (pełne zestawienia) dostępne dla działów — moduły z treścią generuje
-// `npm run build:materials` (js/data/material-*.js), ładowane dynamicznie przy otwarciu
+// `npm run build:materials`; ścieżki wersjonowane (?v=...) gwarantują świeże dane
 const DZIAL_MATERIALS = {
-  trygonometria: { module: "./data/material-trygonometria.js" },
-  "geometria-analityczna": { module: "./data/material-geometria-analityczna.js" }
+  trygonometria: { module: MATERIAL_MODULES["trygonometria"] },
+  "geometria-analityczna": { module: MATERIAL_MODULES["geometria-analityczna"] }
 };
 
 // Zakładki dolnej nawigacji per dział — wzorzec Trygonometrii:
@@ -107,7 +114,8 @@ const TRYGO_NAV = [
   { label: "Okrąg", icon: "circle-dot", view: "view-circle" },
   { label: "Tabela 360°", icon: "table", view: "view-table" },
   { label: "Wzory", icon: "book-open", view: "view-formulas" },
-  { label: "Zadania", icon: "graduation-cap", view: "view-tasks" },
+  { label: "Teoria", icon: "graduation-cap", mat: "trygonometria", tab: "theory" },
+  { label: "Zadania", icon: "list-checks", view: "view-tasks" },
   { label: "Trener", icon: "flame", view: "view-trainer" },
   { label: "Kalkulator", icon: "calculator", view: "view-calculators" }
 ];
@@ -117,7 +125,7 @@ const DZIAL_NAV = {
   "geometria-analityczna": [
     { label: "Teoria i wzory", icon: "book-open", tab: "theory" },
     { label: "Zadania", icon: "graduation-cap", tab: "tasks" },
-    { label: "Trener", icon: "flame", soon: true }
+    { label: "Trener", icon: "flame", view: "view-dzial-trainer" }
   ]
 };
 
@@ -171,6 +179,14 @@ function renderBottomNav(dzialId, activeIdx = 0) {
       if (t.view) {
         document.body.classList.remove("in-material");
         activateView(t.view);
+      } else if (t.mat) {
+        // Zakładka otwierająca materiał innego niż bieżący kontekst (np. Teoria w trig)
+        const info = DZIAL_MATERIALS[t.mat];
+        if (info) {
+          document.body.classList.add("in-material");
+          activateView("view-materialy");
+          showMaterial(async () => (await import(info.module)).default, t.tab || "theory", t.mat);
+        }
       } else if (t.tab) {
         document.body.classList.add("in-material");
         activateView("view-materialy");

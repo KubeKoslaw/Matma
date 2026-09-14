@@ -675,7 +675,8 @@ export function initTrainer(containerId) {
 
   // RENDEROWANIE FORMULARZA PYTANIA
   function renderQuestionMath(mathCode, options) {
-    mathTarget.innerHTML = `$$${mathCode}$$`;
+    // Pytanie już z delimiterami $ — nie owijamy ponownie (uszkodzony wzór)
+    mathTarget.innerHTML = mathCode.includes("$") ? mathCode : `$$${mathCode}$$`;
 
     const hasLongOption = options.some(opt => String(opt || "").length > 25);
     if (hasLongOption) {

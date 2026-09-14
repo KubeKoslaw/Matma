@@ -5,7 +5,7 @@ const DZIALY = [
   {
     id: "trygonometria",
     title: "Trygonometria",
-    desc: "Okrąg • Tabela 0-360° • Wzory • Zadania • Trener",
+    desc: "Okrąg • Tabela 0-360° • Teoria i wzory • Zadania • Trener",
     icon: "sigma",
     available: true
   },

@@ -70,6 +70,9 @@ class MainActivity : ComponentActivity() {
             webChromeClient = WebChromeClient()
 
             // Load from secure local appassets origin, perfectly supporting ES modules
+            // Czyszczenie pamięci podręcznej: po aktualizacji APK Chromium mógłby
+            // serwować stare moduły ES z poprzedniej instalacji
+            clearCache(true)
             loadUrl("https://appassets.androidplatform.net/assets/www/index.html")
         }
 

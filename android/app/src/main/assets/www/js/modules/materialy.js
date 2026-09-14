@@ -564,3 +564,12 @@ export function materialShowTab(tab) {
   currentTab = tab;
   renderTab();
 }
+
+// Odhaczenie zadania z zewnątrz (np. trener działowy po samocenie "Zgadłem")
+export function markTaskDone(dzialId, taskId) {
+  if (dzialId !== currentDzialId) return; // postęp tylko dla aktualnie wczytanego materiału
+  if (!progress.tasks[taskId]) {
+    progress.tasks[taskId] = true;
+    saveProgress();
+  }
+}
