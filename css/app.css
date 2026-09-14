@@ -560,6 +560,165 @@ body:not(.in-hub) #btn-back-hub {
   height: 20px;
 }
 
+/* MODULE 7: MATERIAŁY — PEŁNE ZESTAWIENIA (markdown + KaTeX) */
+body.in-material #bottom-nav {
+  display: none;
+}
+
+.material-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 16px 14px;
+}
+
+.material-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 10px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.material-loading svg {
+  width: 20px;
+  height: 20px;
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.material-error {
+  text-align: center;
+  padding: 30px 10px;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.material-toc {
+  margin-bottom: 14px;
+}
+
+.material-body {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-primary);
+  user-select: text;
+  -webkit-user-select: text;
+  word-break: break-word;
+}
+
+.material-body h1 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary-light);
+  margin: 22px 0 10px;
+  line-height: 1.35;
+}
+
+.material-body h1:first-child {
+  margin-top: 0;
+}
+
+.material-body h2 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--primary-light);
+  margin: 20px 0 8px;
+  scroll-margin-top: 64px;
+}
+
+.material-body h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 16px 0 6px;
+  scroll-margin-top: 64px;
+}
+
+.material-body h4, .material-body h5, .material-body h6 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 12px 0 6px;
+}
+
+.material-body p {
+  margin: 8px 0;
+}
+
+.material-body ul, .material-body ol {
+  margin: 8px 0;
+  padding-left: 22px;
+}
+
+.material-body ol ul,
+.material-body ul ul {
+  margin: 4px 0;
+}
+
+.material-body li {
+  margin: 4px 0;
+}
+
+.material-body strong {
+  font-weight: 700;
+}
+
+.material-body blockquote {
+  border-left: 3px solid var(--primary);
+  background: var(--bg-surface);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 8px 12px;
+  margin: 10px 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.material-body hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 16px 0;
+}
+
+.material-body code {
+  font-family: monospace;
+  font-size: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.material-body .material-math {
+  overflow-x: auto;
+  padding: 2px 0;
+}
+
+.material-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 13px;
+}
+
+.material-table th, .material-table td {
+  border: 1px solid var(--border-color);
+  padding: 6px 8px;
+  text-align: center;
+}
+
+.material-table th {
+  background: var(--bg-surface);
+  font-weight: 700;
+}
+
 /* MODULE 1: OKRĄG TRYGONOMETRYCZNY */
 .circle-card {
   background: var(--bg-card);

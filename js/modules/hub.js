@@ -26,9 +26,9 @@ const DZIALY = [
   {
     id: "geometria-analityczna",
     title: "Geometria analityczna",
-    desc: "Przygotowuję zadania ze zbiorów CKE",
+    desc: "Teoria, wzory i 129 zadań z rozwiązaniami",
     icon: "ruler",
-    available: false
+    available: true
   },
   {
     id: "ciagi",

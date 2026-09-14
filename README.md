@@ -42,6 +42,7 @@ Aplikacja rośnie w kierunku pełnej matematyki rozszerzonej — startujemy z wy
 - Kompendium wzorów z wyszukiwarką i kategoriami
 - **Weryfikator tożsamości L = P** i kalkulator wzorów redukcyjnych z krokami
 - Baza zadań z arkuszy z podpowiedziami i rozwiązaniami krok po kroku
+- **Pełne zestawienia działów** (teoria + wzory + zadania z rozwiązaniami) wbudowane w aplikację — Trygonometria (111 zadań) i Geometria analityczna (129 zadań), z nawigacją po sekcjach
 
 ### 🔥 Trener (styl Duolingo)
 - 4 tryby: *Kąty 0–360°, Ćwiartki & znaki, Wzory redukcyjne, Arkusze zadań*
@@ -117,9 +118,9 @@ Warstwa Android to minimalny wrapper: `WebView` + `WebViewAssetLoader` (bezpiecz
 ## 🗺 Roadmapa
 
 - [x] Trygonometria (kompletna)
+- [x] Geometria analityczna — teoria, wzory i 129 zadań z rozwiązaniami
 - [ ] Funkcje — *zadania w przygotowaniu*
 - [ ] Planimetria — *zadania w przygotowaniu*
-- [ ] Geometria analityczna — *zadania w przygotowaniu*
 - [ ] Ciągi — *zadania w przygotowaniu*
 - [ ] Probabilitata i statystyka — *zadania w przygotowaniu*
 - [ ] Tryb nauki pytaniami otwartymi z oceną kroków

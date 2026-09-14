@@ -37,6 +37,12 @@ export function initTaskViewer(containerId) {
         <span id="task-count-info">Baza: ${TASKS.length} zadań ze zdjęć z pełnymi rozwiązaniami</span>
       </div>
 
+      <div class="task-actions-row" style="margin-bottom: 12px;">
+        <button class="btn-toggle-sol" id="btn-full-material">
+          <i data-lucide="book-open"></i> Pełne zestawienie: teoria, wzory i zadania
+        </button>
+      </div>
+
       <div class="tasks-list" id="tasks-list-container">
         <!-- Zadania renderowane dynamicznie -->
       </div>
@@ -195,6 +201,10 @@ export function initTaskViewer(containerId) {
   searchInput.addEventListener("input", renderTasks);
   catFilter.addEventListener("change", renderTasks);
   diffFilter.addEventListener("change", renderTasks);
+
+  document.getElementById("btn-full-material")?.addEventListener("click", () => {
+    window.openMaterial?.("trygonometria");
+  });
 
   renderTasks();
 }

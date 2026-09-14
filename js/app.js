@@ -1,6 +1,7 @@
 // js/app.js - Główny kontroler aplikacji Trygonometria
 
 import { initHub } from "./modules/hub.js";
+import { initMaterialy, showMaterial } from "./modules/materialy.js";
 import { initUnitCircle } from "./modules/unitCircle.js";
 import { initTableViewer } from "./modules/tableViewer.js";
 import { initFormulaVerifier } from "./modules/formulaVerifier.js";
@@ -50,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 2. Inicjalizacja modułów aplikacji w ich kontenerach
   initHub("view-hub");
+  initMaterialy("view-materialy");
   initUnitCircle("view-circle");
   initTableViewer("view-table");
   initFormulaVerifier("view-formulas");
@@ -81,14 +83,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Pierwszy widok dla danego działu (dla przyszłych działów: dodaj wpis + moduł)
 const DZIAL_START_VIEW = {
-  trygonometria: "view-circle"
+  trygonometria: "view-circle",
+  "geometria-analityczna": "view-materialy"
 };
 
 const DZIAL_TITLES = {
-  trygonometria: "Trygonometria"
+  trygonometria: "Trygonometria",
+  "geometria-analityczna": "Geometria analityczna"
 };
 
+// Materiały (pełne zestawienia) dostępne dla działów — moduły z treścią generuje
+// `npm run build:materials` (js/data/material-*.js), ładowane dynamicznie przy otwarciu
+const DZIAL_MATERIALS = {
+  trygonometria: { module: "./data/material-trygonometria.js" },
+  "geometria-analityczna": { module: "./data/material-geometria-analityczna.js" }
+};
+
+// Aktywny widok — potrzebny do powrotu po obejrzeniu materiału
+let activeViewId = "view-hub";
+
 function activateView(viewId) {
+  activeViewId = viewId;
   document.querySelectorAll("#bottom-nav .nav-item").forEach(n => {
     n.classList.toggle("active", n.getAttribute("data-target") === viewId);
   });
@@ -112,20 +127,48 @@ function setHeaderTitle(text) {
 // Wejście do działu (z wpisaniem stanu do historii — systemowy "wstecz" wraca do menu)
 function openDzial(id, push = true) {
   document.body.classList.remove("in-hub");
+
+  // Działy oparte o materiał markdown (tryb czytania, bez dolnej nawigacji)
+  const info = DZIAL_MATERIALS[id];
+  if (info && DZIAL_START_VIEW[id] === "view-materialy") {
+    document.body.classList.add("in-material");
+    activateView("view-materialy");
+    setHeaderTitle(`${DZIAL_TITLES[id] || id} — zestawienie`);
+    if (push) history.pushState({ dzial: id }, "");
+    showMaterial(async () => (await import(info.module)).default);
+    return;
+  }
+
+  document.body.classList.remove("in-material");
   activateView(DZIAL_START_VIEW[id] || "view-circle");
   setHeaderTitle(DZIAL_TITLES[id] || id);
   if (push) history.pushState({ dzial: id }, "");
 }
 
+// Widok materiału działu (tryb czytania: bez dolnej nawigacji)
+function openMaterial(dzialId, push = true) {
+  const info = DZIAL_MATERIALS[dzialId];
+  if (!info) return;
+  const returnTo = activeViewId;
+  document.body.classList.remove("in-hub");
+  document.body.classList.add("in-material");
+  activateView("view-materialy");
+  setHeaderTitle(`${DZIAL_TITLES[dzialId] || dzialId} — zestawienie`);
+  if (push) history.pushState({ dzial: dzialId, material: true, returnTo }, "");
+  showMaterial(async () => (await import(info.module)).default);
+}
+
 // Powrót do menu działów
 function showHub(push = true) {
   document.body.classList.add("in-hub");
+  document.body.classList.remove("in-material");
   activateView("view-hub");
   setHeaderTitle("Matematyka");
   if (push) history.pushState({ dzial: null }, "");
 }
 
 window.openDzial = openDzial;
+window.openMaterial = openMaterial;
 window.showHub = showHub;
 
 // Obsługa zakładek i nawigacji dolnej
@@ -155,9 +198,21 @@ function setupHubBack() {
   });
 
   window.addEventListener("popstate", (e) => {
-    const dzial = e.state && e.state.dzial;
-    if (dzial) {
-      openDzial(dzial, false);
+    const s = e.state || {};
+    if (s.material && s.dzial && DZIAL_MATERIALS[s.dzial]) {
+      document.body.classList.remove("in-hub");
+      document.body.classList.add("in-material");
+      activateView("view-materialy");
+      setHeaderTitle(`${DZIAL_TITLES[s.dzial] || s.dzial} — zestawienie`);
+      const info = DZIAL_MATERIALS[s.dzial];
+      showMaterial(async () => (await import(info.module)).default);
+    } else if (s.returnTo && s.dzial) {
+      // Powrót z materiału do widoku, z którego go otwarto
+      document.body.classList.remove("in-material");
+      activateView(s.returnTo);
+      setHeaderTitle(DZIAL_TITLES[s.dzial] || s.dzial);
+    } else if (s.dzial) {
+      openDzial(s.dzial, false);
     } else {
       showHub(false);
     }
