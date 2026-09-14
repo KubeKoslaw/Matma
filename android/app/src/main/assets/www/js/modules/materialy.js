@@ -1,7 +1,16 @@
-// materialy.js - Przeglądarka materiałów działu w SEKCJACH (jak widoki Trygonometrii):
-// pasy sekcji (H1) + pasy podsekcji (H2), treść renderowana leniwie na żądanie.
-// Dane materiałów to moduły JS generowane przez `npm run build:materials`
-// (js/data/material-*.js) — brak fetch, działa offline w WebView.
+// materialy.js - Widoki materiałów działu w STYLU Trygonometrii:
+//  • tryb "theory" — karty teorii/wzorów (jak karty wzorów)
+//  • tryb "tasks"  — karty zadań z wyszukiwarką, filtrami grup i rozwijanymi
+//    odpowiedziami/rozwiązaniami (jak widok Zadania)
+// Dane: js/data/material-*.js generowane przez `npm run build:materials`.
+
+const GROUP_LABELS = {
+  intro: "Wprowadzające",
+  m202250: "Maturalne 202–250",
+  m251296: "Maturalne 251–296",
+  m465505: "Maturalne 465–505",
+  m506546: "Maturalne 506–546"
+};
 
 function escapeHtml(str) {
   return str
@@ -11,7 +20,7 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;");
 }
 
-// Formatowanie inline — matematyka ($...$ / $$...$$) jest wycinana na placeholdery,
+// Formatowanie inline — matematyka ($...$ / $$...$$) wycinana na placeholdery,
 // żeby KaTeX dostał surowy LaTeX, a **pogrubienia** działały w poprzek wzorów
 function inlineMd(s) {
   const math = [];
@@ -26,12 +35,11 @@ function inlineMd(s) {
   return formatted.replace(/\x00M(\d+)\x00/g, (_, i) => math[Number(i)]);
 }
 
+// Minimalny renderer markdown block-level dla fragmentów zadania/karty teorii
 function mdToHtml(md) {
-  const lines = md.split("\n");
   const out = [];
-  const listStack = []; // {type, indent}
+  const listStack = [];
   let para = [];
-  let tableBuf = null;
   let mathBuf = null;
   let quoteBuf = null;
 
@@ -50,34 +58,8 @@ function mdToHtml(md) {
       quoteBuf = null;
     }
   };
-  const flushTable = () => {
-    if (!tableBuf) return;
-    const rows = tableBuf
-      .map(l => l.trim())
-      .filter(l => !/^\|[\s:\-|]+\|$/.test(l))
-      .map(l => l.replace(/^\||\|$/g, "").split("|").map(c => c.trim()));
-    if (rows.length) {
-      const [head, ...body] = rows;
-      out.push("<table class=\"material-table\"><thead><tr>");
-      head.forEach(c => out.push(`<th>${inlineMd(c)}</th>`));
-      out.push("</tr></thead><tbody>");
-      body.forEach(r => {
-        out.push("<tr>");
-        r.forEach(c => out.push(`<td>${inlineMd(c)}</td>`));
-        out.push("</tr>");
-      });
-      out.push("</tbody></table>");
-    }
-    tableBuf = null;
-  };
-  const flushAll = () => {
-    flushPara();
-    flushQuote();
-    flushTable();
-    closeLists();
-  };
 
-  for (const line of lines) {
+  for (const line of md.split("\n")) {
     const trimmed = line.trim();
 
     if (mathBuf !== null) {
@@ -89,7 +71,8 @@ function mdToHtml(md) {
       continue;
     }
     if (trimmed.startsWith("$$")) {
-      flushAll();
+      flushPara();
+      flushQuote();
       if (trimmed.slice(2).includes("$$")) {
         out.push(`<div class="material-math">${trimmed}</div>`);
       } else {
@@ -97,16 +80,6 @@ function mdToHtml(md) {
       }
       continue;
     }
-
-    if (trimmed.startsWith("|")) {
-      flushPara();
-      flushQuote();
-      closeLists();
-      if (!tableBuf) tableBuf = [];
-      tableBuf.push(line);
-      continue;
-    }
-    flushTable();
 
     if (trimmed === "") {
       flushPara();
@@ -117,14 +90,16 @@ function mdToHtml(md) {
 
     const h = trimmed.match(/^(#{1,6})\s+(.*)$/);
     if (h) {
-      flushAll();
-      const level = h[1].length;
+      flushPara();
+      flushQuote();
+      const level = Math.min(6, h[1].length + 1);
       out.push(`<h${level}>${inlineMd(h[2].trim())}</h${level}>`);
       continue;
     }
 
     if (/^(-{3,}|\*{3,})$/.test(trimmed)) {
-      flushAll();
+      flushPara();
+      flushQuote();
       out.push("<hr>");
       continue;
     }
@@ -162,48 +137,19 @@ function mdToHtml(md) {
     para.push(trimmed);
   }
 
-  flushAll();
+  flushPara();
+  flushQuote();
+  closeLists();
   if (mathBuf !== null) out.push(`<div class="material-math">${mathBuf.join("\n")}</div>`);
   return out.join("\n");
 }
 
-// Podział materiału na sekcje po nagłówkach zadanego poziomu
-function splitByHeading(md, level) {
-  const re = new RegExp(`^#{${level}}\\s+(.*)$`);
-  const chunks = [];
-  let cur = { title: null, lines: [] };
-  for (const line of md.split("\n")) {
-    const m = line.match(re);
-    if (m) {
-      if (cur.title !== null || cur.lines.some(l => l.trim() !== "")) chunks.push(cur);
-      cur = { title: m[1].trim(), lines: [] };
-    } else if (cur.title !== null) {
-      cur.lines.push(line);
-    } else {
-      cur.lines.push(line); // treść przed pierwszym nagłówkiem (np. cytat)
-    }
-  }
-  if (cur.title !== null || cur.lines.some(l => l.trim() !== "")) chunks.push(cur);
-  return chunks.filter(c => c.title !== null || c.lines.some(l => l.trim() !== ""));
-}
+// --- widok ---------------------------------------------------------------
 
-// Czytelna etykieta sekcji na pasie chipów
-function sectionLabel(title) {
-  const t = title
-    .replace(/CZĘŚĆ TEORETYCZNA.*/i, "Teoria i wzory")
-    .replace(/ZADANIA WPROWADZAJĄCE.*/i, "Zadania wprowadzające")
-    .replace(/\s*[–—]\s*PEŁNE ZESTAWIENIE.*/i, "")
-    .replace(/(.*?)\s*[–—]\s*Zadania [Mm]aturalne\s*(\([^)]*\))?/, "Zadania maturalne $2")
-    .replace(/[–—]\s*$/, "")
-    .replace(/\$\$|\$/g, "")
-    .trim();
-  return t.length > 30 ? t.slice(0, 28) + "…" : t;
-}
-
-function subsectionLabel(title) {
-  const t = title.replace(/\$\$|\$/g, "").trim();
-  return t.length > 34 ? t.slice(0, 32) + "…" : t;
-}
+let currentMaterial = null;
+let currentTab = "theory";
+let currentGroup = "all";
+let taskQuery = "";
 
 export function initMaterialy(containerId) {
   const container = document.getElementById(containerId);
@@ -211,161 +157,179 @@ export function initMaterialy(containerId) {
 
   container.innerHTML = `
     <div class="material-card">
-      <div class="material-header" id="material-header"></div>
-      <div class="material-sections module-subnav" id="material-sections"></div>
-      <div class="material-subsections module-subnav" id="material-subsections" style="display:none;"></div>
       <div class="material-loading" id="material-loading" style="display:none;">
-        <i data-lucide="loader"></i> Wczytywanie sekcji…
+        <i data-lucide="loader"></i> Wczytywanie…
       </div>
-      <div class="material-body" id="material-body"></div>
+      <div id="material-content"></div>
     </div>
   `;
   if (window.lucide) window.lucide.createIcons();
-
-  const sectionsEl = document.getElementById("material-sections");
-  const subsEl = document.getElementById("material-subsections");
-
-  sectionsEl.addEventListener("click", (e) => {
-    const chip = e.target.closest("[data-sec-idx]");
-    if (!chip) return;
-    selectSection(Number(chip.dataset.secIdx));
-  });
-  subsEl.addEventListener("click", (e) => {
-    const chip = e.target.closest("[data-sub-idx]");
-    if (!chip) return;
-    selectSubsection(Number(chip.dataset.subIdx));
-  });
 }
-
-let currentLoader = null;
-let currentData = null;
-let currentSections = [];
-let currentSectionIdx = 0;
-let currentSubs = [];
-let currentSubIdx = 0;
 
 function setLoading(on) {
   const el = document.getElementById("material-loading");
   if (el) el.style.display = on ? "flex" : "none";
 }
 
-function renderChips(el, items, activeIdx, dataAttr, cls) {
-  if (!el) return;
-  el.innerHTML = items.map((label, i) => `
-    <button class="subnav-btn ${cls} ${i === activeIdx ? "active" : ""}" data-${dataAttr}="${i}">${escapeHtml(label)}</button>
-  `).join("");
-  el.style.display = items.length > 1 ? "flex" : "none";
+function contentEl() {
+  return document.getElementById("material-content");
 }
 
-function renderCurrentSubsection() {
-  const sec = currentSections[currentSectionIdx];
-  const body = document.getElementById("material-body");
-  if (!sec || !body) return;
+function renderTheory() {
+  const content = contentEl();
+  content.innerHTML = `
+    <div class="material-theory-list">
+      ${currentMaterial.theory.map((card) => `
+        <div class="formula-item-card material-theory-card">
+          <div class="formula-card-top">
+            <div class="formula-card-title">${inlineMd(card.title)}</div>
+          </div>
+          <div class="material-body">${mdToHtml(card.md)}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+  window.renderMath?.(content);
+}
 
-  setLoading(true);
-  // Parse w następnym tiku, żeby spinner zdążył się pokazać
-  setTimeout(() => {
-    let chunkMd = `# ${sec.title}\n${sec.lines.join("\n")}`;
-    if (currentSubs.length) {
-      const sub = currentSubs[currentSubIdx];
-      chunkMd = `# ${sub.title}\n${sub.lines.join("\n")}`;
+function taskCard(t, idx) {
+  const groupLabel = GROUP_LABELS[t.group] || t.group;
+  return `
+    <div class="task-card-item" data-task-idx="${idx}">
+      <div class="task-card-top">
+        <div class="task-badges">
+          <span class="badge-tag badge-id">Zadanie ${escapeHtml(t.id)}</span>
+          <span class="badge-tag badge-basic">${groupLabel}</span>
+          ${t.flaggedR ? '<span class="badge-tag badge-extended">R</span>' : ""}
+        </div>
+      </div>
+      <div class="task-question-box"><div class="question-text">${mdToHtml(t.question)}</div></div>
+      <div class="task-actions-row">
+        ${t.answer ? `
+          <button class="btn-toggle-hint" data-toggle="answer">
+            <i data-lucide="lightbulb"></i> Odpowiedź
+          </button>` : ""}
+        ${t.solution ? `
+          <button class="btn-toggle-sol" data-toggle="solution">
+            <i data-lucide="file-check"></i> Rozwiązanie
+          </button>` : ""}
+      </div>
+      ${t.answer ? `
+        <div class="task-solution-box" data-box="answer" style="display:none;">
+          <div class="sol-header"><strong>Odpowiedź:</strong></div>
+          ${mdToHtml(t.answer)}
+        </div>` : ""}
+      ${t.solution ? `
+        <div class="task-solution-box" data-box="solution" style="display:none;">
+          <div class="sol-header"><strong>Rozwiązanie krok po kroku:</strong></div>
+          ${mdToHtml(t.solution)}
+        </div>` : ""}
+    </div>
+  `;
+}
+
+function filteredTasks() {
+  const q = taskQuery.toLowerCase().trim();
+  return currentMaterial.tasks.filter((t) => {
+    if (currentGroup !== "all" && t.group !== currentGroup) return false;
+    if (q === "") return true;
+    const plain = (t.id + " " + t.question).replace(/[$\\{}]/g, "").toLowerCase();
+    return plain.includes(q);
+  });
+}
+
+function renderTaskList() {
+  const content = contentEl();
+  const tasks = currentMaterial.tasks;
+  const groups = [...new Set(tasks.map((t) => t.group))];
+  const filtered = filteredTasks();
+
+  const count = filtered.length === tasks.length
+    ? `Wszystkie ${tasks.length} zadań`
+    : `Wyświetlanie: ${filtered.length} z ${tasks.length} zadań`;
+
+  content.innerHTML = `
+    <div class="material-toolbar">
+      <div class="search-box">
+        <i data-lucide="search"></i>
+        <input type="text" id="material-task-search" placeholder="Szukaj zadania (np. 2.5, 251, prosta)..." value="${escapeHtml(taskQuery)}" />
+      </div>
+      <div class="quad-filter-group" id="material-group-filters">
+        <button class="filter-pill ${currentGroup === "all" ? "active" : ""}" data-group="all">Wszystkie</button>
+        ${groups.map((g) => `
+          <button class="filter-pill ${currentGroup === g ? "active" : ""}" data-group="${g}">${GROUP_LABELS[g] || g}</button>
+        `).join("")}
+      </div>
+      <div class="results-info"><span>${count}</span></div>
+    </div>
+    <div class="tasks-list" id="material-task-list">
+      ${filtered.map((t, i) => taskCard(t, i)).join("") || `
+        <div class="task-card-item"><p class="material-nomatch">Brak zadań dla wybranych filtrów.</p></div>
+      `}
+    </div>
+  `;
+  window.renderMath?.(content);
+  if (window.lucide) window.lucide.createIcons();
+
+  const list = document.getElementById("material-task-list");
+  list.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-toggle]");
+    if (!btn) return;
+    const card = btn.closest(".task-card-item");
+    const box = card?.querySelector(`[data-box="${btn.dataset.toggle}"]`);
+    if (!box) return;
+    const isHidden = box.style.display === "none";
+    box.style.display = isHidden ? "block" : "none";
+    btn.classList.toggle("active", isHidden);
+    if (isHidden && !box.dataset.rendered) {
+      box.dataset.rendered = "1";
+      window.renderMath?.(box);
     }
-    body.innerHTML = mdToHtml(chunkMd);
-    setLoading(false);
-    window.scrollTo({ top: 0 });
-    if (window.renderMath) window.renderMath(body);
-  }, 30);
+  });
+
+  const search = document.getElementById("material-task-search");
+  search.addEventListener("input", () => {
+    taskQuery = search.value;
+    renderTaskList();
+    const fresh = document.getElementById("material-task-search");
+    fresh.focus();
+    fresh.setSelectionRange(fresh.value.length, fresh.value.length);
+  });
+
+  document.getElementById("material-group-filters").addEventListener("click", (e) => {
+    const pill = e.target.closest("[data-group]");
+    if (!pill) return;
+    currentGroup = pill.dataset.group;
+    renderTaskList();
+  });
 }
 
-function selectSection(idx) {
-  currentSectionIdx = idx;
-  currentSubIdx = 0;
-  renderChips(
-    document.getElementById("material-sections"),
-    currentSections.map(s => s.label),
-    idx, "sec-idx", "material-sec-btn"
-  );
-
-  const sec = currentSections[idx];
-  currentSubs = sec.subs;
-  const subsEl = document.getElementById("material-subsections");
-  if (currentSubs.length) {
-    renderChips(subsEl, currentSubs.map(s => s.label), 0, "sub-idx", "material-sub-btn");
-  } else if (subsEl) {
-    subsEl.style.display = "none";
+function renderTab() {
+  if (!currentMaterial) return;
+  if (currentTab === "tasks" && currentMaterial.tasks.length) {
+    renderTaskList();
+  } else {
+    renderTheory();
   }
-  renderCurrentSubsection();
 }
 
-function selectSubsection(idx) {
-  currentSubIdx = idx;
-  renderChips(
-    document.getElementById("material-subsections"),
-    currentSubs.map(s => s.label),
-    idx, "sub-idx", "material-sub-btn"
-  );
-  renderCurrentSubsection();
-}
-
-// loader: async () => tekst markdown
-export async function showMaterial(loader) {
-  currentLoader = loader;
-  const header = document.getElementById("material-header");
-  const body = document.getElementById("material-body");
-  if (header) header.innerHTML = "";
-  if (body) body.innerHTML = "";
+// loader: async () => MATERIAL {theory, tasks}; defaultTab: "theory" | "tasks"
+export async function showMaterial(loader, defaultTab) {
+  const content = contentEl();
   setLoading(true);
+  if (content) content.innerHTML = "";
 
   try {
-    currentData = await currentLoader();
-
-    // Sekcje H1; pierwszy kawałek (tytuł dokumentu + cytat) to nagłówek materiału
-    const chunks = splitByHeading(currentData, 1);
-    let headerChunk = null;
-    if (chunks.length && /PEŁNE ZESTAWIENIE/i.test(chunks[0].title || "")) {
-      headerChunk = chunks.shift();
-    } else if (chunks.length > 1 && chunks[0].lines.join("").trim() === "") {
-      chunks.shift();
-    }
-    currentSections = chunks
-      .filter(c => c.lines.join("").trim() !== "" || /TEORETYCZNA|ZADANIA/i.test(c.title || ""))
-      .map(c => ({
-        title: c.title || "",
-        label: sectionLabel(c.title || ""),
-        lines: c.lines,
-        subs: []
-      }));
-
-    // Podsekcje H2 wewnątrz każdej sekcji (leniwie, tylko tytuły teraz)
-    currentSections.forEach(sec => {
-      const md = `# ${sec.title}\n${sec.lines.join("\n")}`;
-      const parts = splitByHeading(md, 2);
-      const preamble = parts.length && parts[0].title === null ? parts.shift() : null;
-      sec.subs = parts
-        .filter(s => s.lines.join("").trim() !== "")
-        .map(s => ({ title: s.title, label: subsectionLabel(s.title), lines: s.lines }));
-      // Treść między tytułem sekcji a pierwszą podsekcją doklej do pierwszej podsekcji
-      // (bez powtarzania nagłówka H1 sekcji — tytuł jest już na chipie)
-      if (preamble && sec.subs.length) {
-        const pre = preamble.lines.filter(l => !/^#\s/.test(l));
-        sec.subs[0].lines = [...pre, ...sec.subs[0].lines];
-      }
-    });
-
-    if (header) {
-      const quote = headerChunk ? headerChunk.lines.filter(l => l.trim().startsWith(">")) : [];
-      header.innerHTML = quote.length
-        ? quote.map(l => inlineMd(l.replace(/^\s*>\s?/, ""))).join("<br>")
-        : "";
-      header.style.display = header.innerHTML ? "block" : "none";
-    }
-
+    currentMaterial = await loader();
+    currentTab = defaultTab || (currentMaterial.theory.length ? "theory" : "tasks");
+    currentGroup = "all";
+    taskQuery = "";
     setLoading(false);
-    selectSection(0);
+    renderTab();
   } catch (err) {
     setLoading(false);
-    if (body) {
-      body.innerHTML = `
+    if (content) {
+      content.innerHTML = `
         <div class="material-error">
           <p>Nie udało się wczytać materiału (${err.message}).</p>
           <button class="action-btn" onclick="location.reload()">Spróbuj ponownie</button>
@@ -373,4 +337,10 @@ export async function showMaterial(loader) {
       `;
     }
   }
+}
+
+// Przełączenie zakładki z dolnej nawigacji działu
+export function materialShowTab(tab) {
+  currentTab = tab;
+  renderTab();
 }

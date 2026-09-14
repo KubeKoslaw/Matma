@@ -561,7 +561,34 @@ body:not(.in-hub) #btn-back-hub {
   height: 20px;
 }
 
-/* MODULE 7: MATERIAŁY — PEŁNE ZESTAWIENIA (markdown + KaTeX) */
+/* MODULE 7: MATERIAŁY — teoria i zadania w stylu Trygonometrii */
+.material-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.material-theory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.material-theory-card .material-body {
+  font-size: 14px;
+  line-height: 1.65;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.material-nomatch {
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 20px 8px;
+}
+
 .material-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
