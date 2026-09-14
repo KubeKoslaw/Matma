@@ -8,13 +8,13 @@ export function initCalculators(containerId) {
   container.innerHTML = `
     <div class="calc-card">
       <div class="module-subnav">
-        <button class="subnav-btn active" id="btn-calc-triangle">
+        <button type="button" class="subnav-btn active" id="btn-calc-triangle" aria-label="Kalkulator trójkąta prostokątnego">
           <i data-lucide="triangle"></i> Trójkąt
         </button>
-        <button class="subnav-btn" id="btn-calc-point">
+        <button type="button" class="subnav-btn" id="btn-calc-point" aria-label="Kalkulator punktu P(a, b)">
           <i data-lucide="crosshair"></i> Punkt P(a, b)
         </button>
-        <button class="subnav-btn" id="btn-calc-converter">
+        <button type="button" class="subnav-btn" id="btn-calc-converter" aria-label="Konwerter stopni i radianów">
           <i data-lucide="arrow-left-right"></i> Stopnie ⇄ Rad
         </button>
       </div>
@@ -179,7 +179,7 @@ export function initCalculators(containerId) {
             <span>Popularne kąty:</span>
             <div class="quick-chips-wrap">
               ${[0, 30, 45, 60, 90, 120, 135, 180, 270, 360].map(d => `
-                <button class="conv-quick-btn" data-deg="${d}">${d}°</button>
+                <button type="button" class="conv-quick-btn ${d === 135 ? "active" : ""}" data-deg="${d}" aria-label="Ustaw kąt ${d} stopni">${d}°</button>
               `).join("")}
             </div>
           </div>
@@ -355,11 +355,18 @@ export function initCalculators(containerId) {
     return `${sign}${num}π/${den}`;
   }
 
+  function updateQuickAngleHighlight(deg) {
+    container.querySelectorAll(".conv-quick-btn").forEach(btn => {
+      btn.classList.toggle("active", Number(btn.dataset.deg) === deg);
+    });
+  }
+
   convDeg.addEventListener("input", () => {
     const d = parseFloat(convDeg.value) || 0;
     const r = (d * Math.PI) / 180;
     convRad.value = r.toFixed(4);
     convPi.innerHTML = `Wielokrotność π: <strong>${getFracPi(d)}</strong>`;
+    updateQuickAngleHighlight(d);
   });
 
   convRad.addEventListener("input", () => {
@@ -367,6 +374,7 @@ export function initCalculators(containerId) {
     const d = (r * 180) / Math.PI;
     convDeg.value = d.toFixed(2);
     convPi.innerHTML = `Wielokrotność π: <strong>${getFracPi(d)}</strong>`;
+    updateQuickAngleHighlight(d);
   });
 
   container.querySelectorAll(".conv-quick-btn").forEach(btn => {
