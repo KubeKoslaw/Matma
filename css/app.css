@@ -166,16 +166,6 @@ body {
   gap: 5px;
 }
 
-.header-title-wrap h1 span.badge-pro {
-  font-size: 9px;
-  background: linear-gradient(135deg, #f59e0b, #ef4444);
-  color: white;
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
 .header-actions {
   display: flex;
   align-items: center;
@@ -572,14 +562,260 @@ body:not(.in-hub) #btn-back-hub {
 .material-theory-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
-.material-theory-card .material-body {
+/* Akordeon teorii — jeden temat = jedna rozwijana karta */
+.material-theory-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.material-theory-card.done {
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.theory-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 14.5px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.theory-check {
+  min-width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-hover);
+  color: transparent;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.material-theory-card.done .theory-check {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.theory-title {
+  flex: 1;
+  line-height: 1.35;
+}
+
+.theory-chevron {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.theory-chevron.open {
+  transform: rotate(180deg);
+}
+
+.theory-content {
+  padding: 2px 14px 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+.material-body {
   font-size: 14px;
-  line-height: 1.65;
+  line-height: 1.6;
+  color: var(--text-primary);
   user-select: text;
   -webkit-user-select: text;
+  word-break: break-word;
+}
+
+/* Etykiety podsekcji (dawne *Analitycznie:* jako punktor) */
+.material-sublabel {
+  margin: 14px 0 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary-light);
+}
+
+[data-theme="light"] .material-sublabel {
+  color: #1d4ed8;
+}
+
+/* Równy rytm pionowy: wzory i tekst w jednym oddechu */
+.material-body p {
+  margin: 6px 0;
+}
+
+.material-body ul,
+.material-body ol {
+  margin: 6px 0;
+  padding-left: 20px;
+}
+
+.material-body ul ul,
+.material-body ol ol,
+.material-body ul ol,
+.material-body ol ul {
+  margin: 3px 0;
+  padding-left: 18px;
+}
+
+.material-body li {
+  margin: 4px 0;
+}
+
+.material-body .katex-display {
+  margin: 0.4em 0;
+}
+
+/* Baner maskotki z postępem czytania */
+.material-progress-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(139, 92, 246, 0.12));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+
+.mat-mascot {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.35));
+}
+
+.mat-progress-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mat-encourage {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--primary-light);
+}
+
+[data-theme="light"] .mat-encourage {
+  color: #1d4ed8;
+}
+
+.mat-progress-info .progress-track {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.mat-progress-info .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: var(--radius-full);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mat-progress-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Zadania: przycisk ✓ Zrobione */
+.btn-toggle-done {
+  min-width: 38px;
+  min-height: 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-color);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-toggle-done svg {
+  width: 17px;
+  height: 17px;
+}
+
+.btn-toggle-done.active {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.task-card-item.task-done .task-question-box {
+  opacity: 0.65;
+}
+
+/* Wyskakująca reakcja chibi (dopamina, wzorzec trenera) */
+.mat-chibi-pop {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--nav-height) + 76px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 200;
+  pointer-events: none;
+  animation: chibiPopIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275), chibiPopOut 0.35s ease-in 1.5s forwards;
+}
+
+.mat-chibi-pop img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+}
+
+.mat-chibi-pop span {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+}
+
+@keyframes chibiPopIn {
+  0% { transform: translateX(-50%) translateY(24px) scale(0.4); opacity: 0; }
+  70% { transform: translateX(-50%) translateY(-6px) scale(1.06); opacity: 1; }
+  100% { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes chibiPopOut {
+  to { transform: translateX(-50%) translateY(10px) scale(0.6); opacity: 0; }
 }
 
 .material-nomatch {
@@ -587,13 +823,6 @@ body:not(.in-hub) #btn-back-hub {
   font-size: 13px;
   text-align: center;
   padding: 20px 8px;
-}
-
-.material-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 16px 14px;
 }
 
 .material-loading {
@@ -642,8 +871,8 @@ body:not(.in-hub) #btn-back-hub {
 .material-body h1 {
   font-size: 18px;
   font-weight: 800;
-  color: var(--primary-light);
-  margin: 22px 0 10px;
+  color: var(--text-primary);
+  margin: 18px 0 8px;
   line-height: 1.35;
 }
 
@@ -654,8 +883,8 @@ body:not(.in-hub) #btn-back-hub {
 .material-body h2 {
   font-size: 16px;
   font-weight: 800;
-  color: var(--primary-light);
-  margin: 20px 0 8px;
+  color: var(--text-primary);
+  margin: 16px 0 6px;
   scroll-margin-top: 64px;
 }
 
@@ -663,32 +892,18 @@ body:not(.in-hub) #btn-back-hub {
   font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 16px 0 6px;
+  margin: 14px 0 6px;
   scroll-margin-top: 64px;
 }
 
 .material-body h4, .material-body h5, .material-body h6 {
   font-size: 13px;
   font-weight: 700;
-  margin: 12px 0 6px;
+  margin: 10px 0 4px;
 }
 
 .material-body p {
-  margin: 8px 0;
-}
-
-.material-body ul, .material-body ol {
-  margin: 8px 0;
-  padding-left: 22px;
-}
-
-.material-body ol ul,
-.material-body ul ul {
-  margin: 4px 0;
-}
-
-.material-body li {
-  margin: 4px 0;
+  margin: 6px 0;
 }
 
 .material-body strong {

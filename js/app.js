@@ -198,7 +198,7 @@ function openDzial(id, push = true) {
     activateView("view-materialy");
     setHeaderTitle(`${DZIAL_TITLES[id] || id} — zestawienie`);
     if (push) history.pushState({ dzial: id }, "");
-    showMaterial(async () => (await import(info.module)).default, "theory");
+    showMaterial(async () => (await import(info.module)).default, "theory", id);
     return;
   }
 
@@ -221,7 +221,7 @@ function openMaterial(dzialId, push = true) {
   activateView("view-materialy");
   setHeaderTitle(`${DZIAL_TITLES[dzialId] || dzialId} — zestawienie`);
   if (push) history.pushState({ dzial: dzialId, material: true, returnTo, tab: "tasks" }, "");
-  showMaterial(async () => (await import(info.module)).default, "tasks");
+  showMaterial(async () => (await import(info.module)).default, "tasks", dzialId);
 }
 
 // Powrót do menu działów
@@ -257,7 +257,7 @@ function setupHubBack() {
       activateView("view-materialy");
       setHeaderTitle(`${DZIAL_TITLES[s.dzial] || s.dzial} — zestawienie`);
       const info = DZIAL_MATERIALS[s.dzial];
-      showMaterial(async () => (await import(info.module)).default, s.tab || "theory");
+      showMaterial(async () => (await import(info.module)).default, s.tab || "theory", s.dzial);
     } else if (s.returnTo && s.dzial) {
       // Powrót z materiału do widoku, z którego go otwarto
       document.body.classList.remove("in-material");

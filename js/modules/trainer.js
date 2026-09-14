@@ -84,6 +84,8 @@ class SoundFX {
 }
 
 const sounds = new SoundFX();
+// Udostępnienie dźwięków innym modułom (materialy.js) — respektuje wyciszenie
+window.trainerSounds = sounds;
 
 // Rangi i poziomy Duolingo (ikony lucide zamiast emoji — spójny wygląd na każdym urządzeniu)
 const LEVELS = [
@@ -92,7 +94,7 @@ const LEVELS = [
   { level: 3, name: "Pogromca Redukcji", xpNeeded: 160, icon: "flame", emote: "smug_thumbsup.png" },
   { level: 4, name: "Mistrz Jedynki", xpNeeded: 320, icon: "gem", emote: "magic_star.png" },
   { level: 5, name: "Władca Trygonometrii", xpNeeded: 550, icon: "crown", emote: "broom_fly.png" },
-  { level: 6, name: "Arcymistrz CKE", xpNeeded: 900, icon: "trophy", emote: "devil_jumping.png" }
+  { level: 6, name: "Arcymistrz Matematyki", xpNeeded: 900, icon: "trophy", emote: "devil_jumping.png" }
 ];
 
 // 8 Etapów Nauki (Ścieżka Duolingo z postaciami chibi)
@@ -104,7 +106,7 @@ const STAGES = [
   { id: 5, title: "III i IV Ćwiartka", desc: "Wartości dla 210°, 225°, 240°, 300°, 315°, 330°", icon: "🌕", category: "quad34", emote: "broom_fly.png" },
   { id: 6, title: "Jedynka i Wzory Ilorazowe", desc: "sin²α + cos²α = 1, tg·ctg = 1", icon: "🔗", category: "identities", emote: "magic_star.png" },
   { id: 7, title: "Kąt Podwojony & Redukcja", desc: "sin 2α, cos 2α, kąty ujemne", icon: "⚡", category: "advanced_reduction", emote: "staff.png" },
-  { id: 8, title: "Turniej Maturalny CKE", desc: "Wielki miks wszystkich zagadnień", icon: "🏆", category: "matura_exam", emote: "devil_jumping.png" }
+  { id: 8, title: "Turniej Maturalny", desc: "Wielki miks wszystkich zagadnień", icon: "🏆", category: "matura_exam", emote: "devil_jumping.png" }
 ];
 
 export function initTrainer(containerId) {
@@ -173,7 +175,7 @@ export function initTrainer(containerId) {
           <button class="mode-chip-btn active" data-mode="values">Kąty 0-360°</button>
           <button class="mode-chip-btn" data-mode="signs">Ćwiartki & Znaki</button>
           <button class="mode-chip-btn" data-mode="reduction">Wzory Redukcyjne</button>
-          <button class="mode-chip-btn" data-mode="matura">Matura CKE</button>
+          <button class="mode-chip-btn" data-mode="matura">Zadania maturalne</button>
         </div>
         <div class="timer-control-row">
           <button class="timer-chip-toggle" id="btn-toggle-timer-chip" title="Kliknij, aby przełączyć tryb na czas">
@@ -574,7 +576,7 @@ export function initTrainer(containerId) {
 
   // 4. MODUŁ: MATURALNE PYTANIA CKE
   function generateMaturaQuestion() {
-    catTag.textContent = "Zadania Maturalne CKE";
+    catTag.textContent = "Zadania Maturalne";
     promptEl.textContent = "Rozwiąż zadanie maturalne:";
 
     const maturaPool = TASKS.filter(t => t.type === "closed" || t.category === "exam");
@@ -587,7 +589,7 @@ export function initTrainer(containerId) {
     currentQuestion = {
       correctIndex,
       options,
-      explanation: `Z klucza CKE: poprawna odpowiedź to opcja <strong>${String.fromCharCode(65 + correctIndex)}</strong>.<br/>${t.solution.steps.slice(0, 2).join("<br/>")}`
+      explanation: `Z klucza odpowiedzi: poprawna to opcja <strong>${String.fromCharCode(65 + correctIndex)}</strong>.<br/>${t.solution.steps.slice(0, 2).join("<br/>")}`
     };
 
     renderQuestionMath(targetMath, options);

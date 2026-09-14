@@ -12,14 +12,14 @@ const DZIALY = [
   {
     id: "funkcje",
     title: "Funkcje",
-    desc: "Przygotowuję zadania ze zbiorów CKE",
+    desc: "Przygotowuję zadania ze zbiorów",
     icon: "chart-line",
     available: false
   },
   {
     id: "planimetria",
     title: "Planimetria",
-    desc: "Przygotowuję zadania ze zbiorów CKE",
+    desc: "Przygotowuję zadania ze zbiorów",
     icon: "shapes",
     available: false
   },
@@ -33,14 +33,14 @@ const DZIALY = [
   {
     id: "ciagi",
     title: "Ciągi",
-    desc: "Przygotowuję zadania ze zbiorów CKE",
+    desc: "Przygotowuję zadania ze zbiorów",
     icon: "list-ordered",
     available: false
   },
   {
     id: "probabilitata",
     title: "Probabilitata i statystyka",
-    desc: "Przygotowuję zadania ze zbiorów CKE",
+    desc: "Przygotowuję zadania ze zbiorów",
     icon: "dice-5",
     available: false
   }
