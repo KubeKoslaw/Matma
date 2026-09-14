@@ -1,13 +1,13 @@
-# 📐 Matematyka CKE 2026
+# 📐 Matematyka — zakres rozszerzony
 
-> Interaktywna aplikacja do nauki matematyki pod maturę — startowo **trygonometria**, kolejne działy w przygotowaniu.
+> Interaktywna aplikacja do nauki matematyki w zakresie rozszerzonym — startowo **trygonometria**, kolejne działy w przygotowaniu.
 
 ![Platform](https://img.shields.io/badge/platform-Android%207%2B%20%7C%20Web-3b82f6)
 ![Release](https://img.shields.io/badge/release-v0.1.0--beta-f59e0b)
-![Matura](https://img.shields.io/badge/matura-CKE%202026-ef4444)
+![Poziom](https://img.shields.io/badge/poziom-rozszerzony-ef4444)
 ![Build](https://img.shields.io/badge/build-Gradle%20%2B%20ES%20modules-8b5cf6)
 
-Aplikacja łączy **okrąg trygonometryczny z obsługą dotyku**, pełną **tabelę wartości 0–360°**, **kompendium wzorów** z weryfikatorem tożsamości, **bazę zadań maturalnych** oraz **trener quiz** w stylu Duolingo — wszystko w jednym, offline-first, w pełni po polsku.
+Aplikacja łączy **okrąg trygonometryczny z obsługą dotyku**, pełną **tabelę wartości 0–360°**, **kompendium wzorów** z weryfikatorem tożsamości, **bazę zadań** oraz **trener quiz** w stylu Duolingo — wszystko w jednym, offline-first, w pełni po polsku.
 
 ---
 
@@ -26,7 +26,7 @@ Aplikacja łączy **okrąg trygonometryczny z obsługą dotyku**, pełną **tabe
 ## ✨ Funkcje
 
 ### 🎯 Menu startowe (hub)
-Aplikacja rośnie w kierunku pełnej matematyki maturalnej — startujemy z wyborem działu. Dostępne dziś: **Trygonometria**. W przygotowaniu: *Funkcje, Planimetria, Geometria analityczna, Ciągi, Probabilitata i statystyka*.
+Aplikacja rośnie w kierunku pełnej matematyki rozszerzonej — startujemy z wyborem działu. Dostępne dziś: **Trygonometria**. W przygotowaniu: *Funkcje, Planimetria, Geometria analityczna, Ciągi, Probabilitata i statystyka*.
 
 ### 📊 Okrąg trygonometryczny
 - Płynne przeciąganie palcem z **przyciąganiem do kątów charakterystycznych** (±3°)
@@ -34,17 +34,17 @@ Aplikacja rośnie w kierunku pełnej matematyki maturalnej — startujemy z wybo
 - Canvas rysowany w rozdzielczości **HiDPI** (ostry na każdym ekranie), paleta czytana z aktualnego motywu
 
 ### 📋 Tabela wartości 0–360°
-- Tryb **„Dokładne (CKE)"** — kąty charakterystyczne z pierwiastkami (KaTeX)
+- Tryb **„Dokładne"** — kąty charakterystyczne z pierwiastkami (KaTeX)
 - Tryb **„Co 1°"** — 361 wierszy na czystych liczbach, render natychmiastowy
 - Wyszukiwarka (`45`, `π/3`, `III`…), filtry ćwiartek, tapnięcie wiersza = kopiowanie wartości
 
 ### 📚 Wzory i zadania
 - Kompendium wzorów z wyszukiwarką i kategoriami
 - **Weryfikator tożsamości L = P** i kalkulator wzorów redukcyjnych z krokami
-- Baza zadań maturalnych CKE z podpowiedziami i rozwiązaniami krok po kroku
+- Baza zadań z arkuszy z podpowiedziami i rozwiązaniami krok po kroku
 
 ### 🔥 Trener (styl Duolingo)
-- 4 tryby: *Kąty 0–360°, Ćwiartki & znaki, Wzory redukcyjne, Matura CKE*
+- 4 tryby: *Kąty 0–360°, Ćwiartki & znaki, Wzory redukcyjne, Arkusze zadań*
 - **XP, poziomy, serie (combo), serduszka**, tryb na czas (30/15/8 s) i konfetti
 - **Ścieżka 8 etapów** z uczciwą progresją gwiazdek (2 poprawne odpowiedzi = ⭐)
 
@@ -126,4 +126,4 @@ Warstwa Android to minimalny wrapper: `WebView` + `WebViewAssetLoader` (bezpiecz
 
 ---
 
-*© 2026 KubeKoslaw — projekt edukacyjny przygotowujący do matury z matematyki (CKE 2026).*
+*© 2026 KubeKoslaw — projekt edukacyjny: matematyka w zakresie rozszerzonym.*
