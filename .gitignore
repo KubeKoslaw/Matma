@@ -1,0 +1,23 @@
+# Node
+node_modules/
+
+# Android build outputs & machine-specific config
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.apk
+
+# Generated verification artifacts
+verify/
+android_screenshot*.png
+planmode_current_screen.png
+qr_*.png
+
+# Local tooling / cache
+.mimosa/
+.zcode/
+wakelaptop
+
+# Reference photos (not needed to build or run)
+IMG_*.jpg
