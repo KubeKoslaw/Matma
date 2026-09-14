@@ -1,7 +1,7 @@
 // js/app.js - Główny kontroler aplikacji Trygonometria
 
 import { initHub } from "./modules/hub.js";
-import { initMaterialy, showMaterial } from "./modules/materialy.js";
+import { initMaterialy, showMaterial, materialJump } from "./modules/materialy.js";
 import { initUnitCircle } from "./modules/unitCircle.js";
 import { initTableViewer } from "./modules/tableViewer.js";
 import { initFormulaVerifier } from "./modules/formulaVerifier.js";
@@ -59,8 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initTrainer("view-trainer");
   initCalculators("view-calculators");
 
-  // 3. Konfiguracja paska nawigacji dolnego i powrotu do menu
-  setupNavigation();
+  // 3. Konfiguracja powrotu do menu (dolna nawigacja renderuje się per dział
+  //    w openDzial — wzorzec Trygonometrii)
   setupHubBack();
 
   // 4. Inicjalizacja ikon Lucide
@@ -99,6 +99,30 @@ const DZIAL_MATERIALS = {
   "geometria-analityczna": { module: "./data/material-geometria-analityczna.js" }
 };
 
+// Zakładki dolnej nawigacji per dział — wzorzec Trygonometrii:
+// każdy dział dzieli się na pod-strony (teoria / wzory / zadania / trener…).
+// Tab `.view` → widok natywny; tab `.sec` → sekcja materiału (materialJump);
+// tab `.soon` → placeholder z toastem.
+const TRYGO_NAV = [
+  { label: "Okrąg", icon: "circle-dot", view: "view-circle" },
+  { label: "Tabela 360°", icon: "table", view: "view-table" },
+  { label: "Wzory", icon: "book-open", view: "view-formulas" },
+  { label: "Zadania", icon: "graduation-cap", view: "view-tasks" },
+  { label: "Trener", icon: "flame", view: "view-trainer" },
+  { label: "Kalkulator", icon: "calculator", view: "view-calculators" }
+];
+
+const DZIAL_NAV = {
+  trygonometria: TRYGO_NAV,
+  "geometria-analityczna": [
+    { label: "Teoria i wzory", icon: "book-open", sec: "TEORETYCZNA" },
+    { label: "Zadania wprow.", icon: "pencil", sec: "GEOMETRIA ANALITYCZNA", sub: "WPROWADZAJĄCE" },
+    { label: "Zad. 202–250", icon: "graduation-cap", sec: "od 202" },
+    { label: "Zad. 251–296", icon: "award", sec: "251" },
+    { label: "Trener", icon: "flame", soon: true }
+  ]
+};
+
 // Aktywny widok — potrzebny do powrotu po obejrzeniu materiału
 let activeViewId = "view-hub";
 
@@ -124,14 +148,55 @@ function setHeaderTitle(text) {
   if (el) el.textContent = text;
 }
 
+// Dolna nawigacja renderowana per dział (wzorzec Trygonometrii)
+function renderBottomNav(dzialId, activeIdx = 0) {
+  const nav = document.getElementById("bottom-nav");
+  const tabs = DZIAL_NAV[dzialId] || [];
+  nav.innerHTML = tabs.map((t, i) => `
+    <button class="nav-item ${i === activeIdx ? "active" : ""}" data-nav-idx="${i}">
+      <i data-lucide="${t.icon}"></i>
+      <span>${t.label}</span>
+    </button>
+  `).join("");
+  if (window.lucide) window.lucide.createIcons();
+
+  nav.querySelectorAll("[data-nav-idx]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const i = Number(btn.dataset.navIdx);
+      const t = tabs[i];
+      if (!t) return;
+      if (t.soon) {
+        window.showToast?.(`„${t.label}” dla tego działu będzie dostępny wkrótce`);
+        return;
+      }
+      markNav(i);
+      if (t.view) {
+        document.body.classList.remove("in-material");
+        activateView(t.view);
+      } else if (t.sec) {
+        document.body.classList.add("in-material");
+        activateView("view-materialy");
+        materialJump(t.sec, t.sub);
+      }
+    });
+  });
+}
+
+function markNav(idx) {
+  document.querySelectorAll("#bottom-nav .nav-item").forEach((b, i) => {
+    b.classList.toggle("active", i === idx);
+  });
+}
+
 // Wejście do działu (z wpisaniem stanu do historii — systemowy "wstecz" wraca do menu)
 function openDzial(id, push = true) {
   document.body.classList.remove("in-hub");
 
-  // Działy oparte o materiał markdown (tryb czytania, bez dolnej nawigacji)
+  // Działy oparte o materiał markdown (własna nawigacja z zakładkami sekcji)
   const info = DZIAL_MATERIALS[id];
   if (info && DZIAL_START_VIEW[id] === "view-materialy") {
     document.body.classList.add("in-material");
+    renderBottomNav(id, 0);
     activateView("view-materialy");
     setHeaderTitle(`${DZIAL_TITLES[id] || id} — zestawienie`);
     if (push) history.pushState({ dzial: id }, "");
@@ -140,18 +205,21 @@ function openDzial(id, push = true) {
   }
 
   document.body.classList.remove("in-material");
-  activateView(DZIAL_START_VIEW[id] || "view-circle");
+  const startView = DZIAL_START_VIEW[id] || "view-circle";
+  renderBottomNav(id, (DZIAL_NAV[id] || []).findIndex(t => t.view === startView));
+  activateView(startView);
   setHeaderTitle(DZIAL_TITLES[id] || id);
   if (push) history.pushState({ dzial: id }, "");
 }
 
-// Widok materiału działu (tryb czytania: bez dolnej nawigacji)
+// Widok materiału działu (np. pełne zestawienie otwierane z widoku Zadania)
 function openMaterial(dzialId, push = true) {
   const info = DZIAL_MATERIALS[dzialId];
   if (!info) return;
   const returnTo = activeViewId;
   document.body.classList.remove("in-hub");
   document.body.classList.add("in-material");
+  markNav((DZIAL_NAV[dzialId] || []).findIndex(t => t.view === returnTo));
   activateView("view-materialy");
   setHeaderTitle(`${DZIAL_TITLES[dzialId] || dzialId} — zestawienie`);
   if (push) history.pushState({ dzial: dzialId, material: true, returnTo }, "");
@@ -170,21 +238,6 @@ function showHub(push = true) {
 window.openDzial = openDzial;
 window.openMaterial = openMaterial;
 window.showHub = showHub;
-
-// Obsługa zakładek i nawigacji dolnej
-function setupNavigation() {
-  const navItems = document.querySelectorAll("#bottom-nav .nav-item");
-
-  navItems.forEach(item => {
-    item.addEventListener("click", () => {
-      const targetViewId = item.getAttribute("data-target");
-      if (!targetViewId) return;
-
-      document.body.classList.remove("in-hub");
-      activateView(targetViewId);
-    });
-  });
-}
 
 // Przycisk "wstecz" w nagłówku + systemowy przycisk wstecz Androida (popstate)
 function setupHubBack() {
