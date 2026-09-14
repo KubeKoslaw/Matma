@@ -427,6 +427,139 @@ body {
   transform: translateY(0);
 }
 
+/* MODULE 0: HUB — MENU DZIAŁÓW */
+body.in-hub #bottom-nav {
+  display: none;
+}
+
+#btn-back-hub {
+  display: none;
+}
+
+body:not(.in-hub) #btn-back-hub {
+  display: flex;
+}
+
+.hub-header {
+  margin-bottom: 16px;
+  padding: 4px 2px;
+}
+
+.hub-header h2 {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+
+.hub-header p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.hub-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hub-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hub-card.available:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.hub-card.available:active {
+  transform: scale(0.985);
+  border-color: var(--primary);
+}
+
+.hub-icon {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.hub-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.hub-card.soon {
+  opacity: 0.75;
+}
+
+.hub-card.soon .hub-icon {
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+}
+
+.hub-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hub-info h3 {
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hub-info p {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.hub-soon-badge {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+[data-theme="light"] .hub-soon-badge {
+  color: #b45309;
+}
+
+.hub-chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.hub-chevron svg {
+  width: 20px;
+  height: 20px;
+}
+
 /* MODULE 1: OKRĄG TRYGONOMETRYCZNY */
 .circle-card {
   background: var(--bg-card);
