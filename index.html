@@ -25,17 +25,20 @@
   <header id="app-header">
     <div class="header-brand">
       <div class="header-logo-icon">
-        <span>sin</span>
+        <span>∑</span>
       </div>
       <div class="header-title-wrap">
         <h1>
-          Trygonometria
+          <span id="header-title-text">Matematyka</span>
           <span class="badge-pro">CKE 2026</span>
         </h1>
       </div>
     </div>
 
     <div class="header-actions">
+      <button class="icon-btn" id="btn-back-hub" title="Powrót do menu działów" aria-label="Powrót do menu działów">
+        <i data-lucide="arrow-left"></i>
+      </button>
       <button class="icon-btn" id="btn-toggle-theme" title="Zmień motyw jasny/ciemny" aria-label="Zmień motyw jasny/ciemny">
         <i data-lucide="sun" id="theme-icon"></i>
       </button>
@@ -44,8 +47,13 @@
 
   <!-- Main View Container -->
   <main id="app-main">
+    <!-- Widok 0: Menu startowe — wybór działu -->
+    <section id="view-hub" class="view-panel active">
+      <!-- Wstrzykiwane przez js/modules/hub.js -->
+    </section>
+
     <!-- Widok 1: Okrąg trygonometryczny -->
-    <section id="view-circle" class="view-panel active">
+    <section id="view-circle" class="view-panel">
       <!-- Wstrzykiwane przez js/modules/unitCircle.js -->
     </section>
 

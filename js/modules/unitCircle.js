@@ -331,37 +331,37 @@ export function initUnitCircle(containerId) {
     ctx.lineWidth = 2.5;
     ctx.stroke();
 
-    // Etykieta punktu P — szerokość mierzona, żeby nie ucinało tekstu przy krawędzi
+    // Etykieta punktu P — canvas ma border-radius:50%, więc etykieta musi
+    // zmieścić się w OKRĘGU przycinającym, nie w prostokącie płótna
     ctx.fillStyle = t.radiusLine;
     ctx.font = "bold 11px Inter, sans-serif";
     const label = "P(cos α, sin α)";
     const labelWidth = ctx.measureText(label).width;
-    let labelAlign, labelX;
-    if (px > cx) {
-      if (px + 8 + labelWidth > w - 2) {
-        labelAlign = "right";
-        labelX = px - 8;
-      } else {
-        labelAlign = "left";
-        labelX = px + 8;
-      }
-    } else {
-      if (px - 8 - labelWidth < 2) {
-        labelAlign = "left";
-        labelX = px + 8;
-      } else {
-        labelAlign = "right";
-        labelX = px - 8;
-      }
-    }
-    // Ostateczny clamp do krawędzi płótna, gdy etykieta nie mieści się po żadnej stronie
-    if (labelAlign === "left" && labelX + labelWidth > w - 2) {
-      labelX = w - 2 - labelWidth;
-    } else if (labelAlign === "right" && labelX - labelWidth < 2) {
-      labelX = 2 + labelWidth;
-    }
-    ctx.textAlign = labelAlign;
-    ctx.fillText(label, labelX, py - 6);
+    const clipR = w / 2 - 3;
+    const fits = (x0, x1, y) => {
+      const dy = y - cy;
+      const ok = (x) => {
+        const dx = x - cx;
+        return dx * dx + dy * dy <= clipR * clipR;
+      };
+      return ok(x0) && ok(x1);
+    };
+
+    const candidates = [
+      { align: "left",   x: px + 8,         y: py - 8 },
+      { align: "right",  x: px - 8,         y: py - 8 },
+      { align: "center", x: px,             y: py + 22 },
+      { align: "center", x: px,             y: py - 18 },
+      { align: "center", x: cx,             y: py - 8 }
+    ];
+    const spot = candidates.find(c => {
+      const x0 = c.align === "left" ? c.x : (c.align === "right" ? c.x - labelWidth : c.x - labelWidth / 2);
+      const x1 = x0 + labelWidth;
+      return fits(x0, x1, c.y);
+    }) || { align: "center", x: cx, y: cy + clipR - 14 };
+
+    ctx.textAlign = spot.align;
+    ctx.fillText(label, spot.x, spot.y);
   }
 
   function handlePointer(e) {
