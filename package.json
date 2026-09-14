@@ -1,0 +1,18 @@
+{
+  "name": "matma",
+  "version": "1.0.0",
+  "description": "Trygonometria — PWA + WebView (Android). Katalog główny to źródło wersji web, android/app/src/main/assets/www to kopia wklejana do APK.",
+  "main": "index.js",
+  "scripts": {
+    "sync:www": "cp index.html manifest.json icon.svg android/app/src/main/assets/www/ && cp -r css js assets android/app/src/main/assets/www/",
+    "sync:root": "cp android/app/src/main/assets/www/index.html android/app/src/main/assets/www/manifest.json android/app/src/main/assets/www/icon.svg . && cp -r android/app/src/main/assets/www/css android/app/src/main/assets/www/js android/app/src/main/assets/www/assets ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "katex": "^0.18.7",
+    "lucide": "^1.45.0"
+  }
+}
