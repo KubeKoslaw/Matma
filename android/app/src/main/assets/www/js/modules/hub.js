@@ -5,42 +5,42 @@ const DZIALY = [
   {
     id: "trygonometria",
     title: "Trygonometria",
-    desc: "Okrąg • Tabela 0-360° • Wzory • Zadania • Trener",
+    desc: "Okrąg • Tabela 0-360° • Teoria i wzory • Zadania • Trener",
     icon: "sigma",
     available: true
   },
   {
     id: "funkcje",
     title: "Funkcje",
-    desc: "Przygotowuję zadania ze zbiorów CKE",
+    desc: "Przygotowuję zadania ze zbiorów",
     icon: "chart-line",
     available: false
   },
   {
     id: "planimetria",
     title: "Planimetria",
-    desc: "Przygotowuję zadania ze zbiorów CKE",
+    desc: "Przygotowuję zadania ze zbiorów",
     icon: "shapes",
     available: false
   },
   {
     id: "geometria-analityczna",
     title: "Geometria analityczna",
-    desc: "Przygotowuję zadania ze zbiorów CKE",
+    desc: "Teoria, wzory i 129 zadań z rozwiązaniami",
     icon: "ruler",
-    available: false
+    available: true
   },
   {
     id: "ciagi",
     title: "Ciągi",
-    desc: "Przygotowuję zadania ze zbiorów CKE",
+    desc: "Przygotowuję zadania ze zbiorów",
     icon: "list-ordered",
     available: false
   },
   {
     id: "probabilitata",
     title: "Probabilitata i statystyka",
-    desc: "Przygotowuję zadania ze zbiorów CKE",
+    desc: "Przygotowuję zadania ze zbiorów",
     icon: "dice-5",
     available: false
   }
