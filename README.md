@@ -43,7 +43,7 @@ Aplikacja rośnie w kierunku pełnej matematyki rozszerzonej — startujemy z wy
 - **Weryfikator tożsamości L = P** i kalkulator wzorów redukcyjnych z krokami
 - Baza zadań z arkuszy z podpowiedziami i rozwiązaniami krok po kroku
 
-### 🔥 Trener (styl Duolingo)
+### 🔥 Trener 
 - 4 tryby: *Kąty 0–360°, Ćwiartki & znaki, Wzory redukcyjne, Arkusze zadań*
 - **XP, poziomy, serie (combo), serduszka**, tryb na czas (30/15/8 s) i konfetti
 - **Ścieżka 8 etapów** z uczciwą progresją gwiazdek (2 poprawne odpowiedzi = ⭐)
