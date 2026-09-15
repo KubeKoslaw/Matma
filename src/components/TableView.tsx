@@ -215,7 +215,7 @@ export default function TableView() {
             id="tab-special-angles"
             onClick={() => setCurrentTab("special")}
           >
-            <Icon name="star" /> Dokładne (CKE)
+            <Icon name="star" /> Dokładne — z pierwiastkami
           </button>
           <button
             className={`tab-btn ${currentTab === "full" ? "active" : ""}`}

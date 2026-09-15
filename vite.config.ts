@@ -16,9 +16,7 @@ export default defineConfig({
       manifest: false,
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,woff,woff2,ttf}"],
-        navigateFallback: "index.html",
-        // dane materiałów są duże, ale skoro precache — podnosimy limit
-        maximumFileSizeToCacheInBytes: 600 * 1024
+        navigateFallback: "index.html"
       }
     })
   ],

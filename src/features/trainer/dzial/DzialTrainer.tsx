@@ -68,7 +68,7 @@ export default function DzialTrainer({ dzial }: { dzial: Dzial }) {
   }, [dzial.id]);
 
   const nextRef = useRef<() => void>(() => {});
-  const pendingTimerDiff = useRef<"easy" | "medium" | "hard" | null>(null);
+  const pendingTimerDiff = useRef<"easy" | "medium" | "hard" | null | undefined>(null);
 
   const nextQuestion = useCallback(() => {
     timer.stop();

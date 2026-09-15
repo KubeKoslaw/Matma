@@ -1,17 +1,19 @@
 // icons.ts - Mapa nazw ikon (stringi w rejestrze działów) na komponenty lucide-react.
 // Jawne importy zamiast pełnego rejestru ikon — tree-shaking utrzymuje bundle małym.
 import {
-  ArrowLeft, ArrowRight, BookOpen, Calculator, ChartLine, Check, ChevronDown,
-  ChevronRight, CircleDot, Construction, Crown, Dice5, Eye, FileCheck, Flame,
-  Gem, GraduationCap, Heart, Lightbulb, ListChecks, ListOrdered, Loader, Map,
-  Moon, Ruler, Search, Shapes, Sigma, Sprout, Sun, Table, Timer, Volume2,
-  VolumeX, X, Zap
+  ArrowLeft, ArrowLeftRight, ArrowRight, ArrowRightLeft, BookOpen, Calculator,
+  ChartLine, Check, ChevronDown, ChevronRight, CircleDot, Construction,
+  Crosshair, Crown, Dice5, Eye, FileCheck, Flame, Gem, GraduationCap, Heart,
+  Lightbulb, ListChecks, ListOrdered, Loader, Map, Moon, Ruler, Search,
+  Shapes, Sigma, Sprout, Star, Sun, Table, Timer, Triangle, Volume2, VolumeX, X, Zap
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export const ICONS = {
   "arrow-left": ArrowLeft,
+  "arrow-left-right": ArrowLeftRight,
   "arrow-right": ArrowRight,
+  "arrow-right-left": ArrowRightLeft,
   "book-open": BookOpen,
   calculator: Calculator,
   "chart-line": ChartLine,
@@ -20,6 +22,7 @@ export const ICONS = {
   "chevron-right": ChevronRight,
   "circle-dot": CircleDot,
   construction: Construction,
+  crosshair: Crosshair,
   crown: Crown,
   "dice-5": Dice5,
   eye: Eye,
@@ -39,9 +42,11 @@ export const ICONS = {
   shapes: Shapes,
   sigma: Sigma,
   sprout: Sprout,
+  star: Star,
   sun: Sun,
   table: Table,
   timer: Timer,
+  triangle: Triangle,
   "volume-2": Volume2,
   "volume-x": VolumeX,
   x: X,

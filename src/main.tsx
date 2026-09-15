@@ -13,11 +13,9 @@ const savedTheme = localStorage.getItem("trig_theme") || "dark";
 document.documentElement.setAttribute("data-theme", savedTheme);
 
 // PWA: service worker generowany przez vite-plugin-pwa (autoUpdate);
-// w WebView appassets rejestracja może się nie powieść — pomijamy ciszo.
+// w WebView appassets rejestracja może się nie powieść — plugin pomija ciszo.
 if ("serviceWorker" in navigator && window.location.protocol.startsWith("http")) {
-  registerSW({ immediate: true }).catch((err) => {
-    console.log("ServiceWorker registration skipped or failed:", err);
-  });
+  registerSW({ immediate: true });
 }
 
 createRoot(document.getElementById("root")!).render(

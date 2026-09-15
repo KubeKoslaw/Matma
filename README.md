@@ -1,13 +1,13 @@
 # 📐 Matematyka — zakres rozszerzony
 
-> Interaktywna aplikacja do nauki matematyki w zakresie rozszerzonym — startowo **trygonometria**, kolejne działy w przygotowaniu.
+> Interaktywna aplikacja do nauki matematyki w zakresie rozszerzonym: **6 działów** z teorią, wzorami i zadaniami z rozwiązaniami krok po kroku.
 
-![Platform](https://img.shields.io/badge/platform-Android%207%2B%20%7C%20Web-3b82f6)
-![Release](https://img.shields.io/badge/release-v0.1.0--beta-f59e0b)
+![Platform](https://img.shields.io/badge/platform-Android%207%2B%20%7C%20Web%20%7C%20PWA-3b82f6)
+![Release](https://img.shields.io/badge/release-v1.2.0-f59e0b)
 ![Poziom](https://img.shields.io/badge/poziom-rozszerzony-ef4444)
-![Build](https://img.shields.io/badge/build-Gradle%20%2B%20ES%20modules-8b5cf6)
+![Build](https://img.shields.io/badge/React%2019%20%2B%20Vite%20%2B%20TypeScript-8b5cf6)
 
-Aplikacja łączy **okrąg trygonometryczny z obsługą dotyku**, pełną **tabelę wartości 0–360°**, **kompendium wzorów** z weryfikatorem tożsamości, **bazę zadań** oraz **trener quiz** w stylu Duolingo — wszystko w jednym, offline-first, w pełni po polsku.
+Aplikacja łączy **okrąg trygonometryczny z obsługą dotyku**, pełną **tabelę wartości 0–360°**, **kompendium wzorów** z weryfikatorem tożsamości, **bazy zadań** oraz **trener quiz w stylu Duolingo** — wszystko w jednym, offline-first, w pełni po polsku.
 
 ---
 
@@ -26,7 +26,10 @@ Aplikacja łączy **okrąg trygonometryczny z obsługą dotyku**, pełną **tabe
 ## ✨ Funkcje
 
 ### 🎯 Menu startowe (hub)
-Aplikacja rośnie w kierunku pełnej matematyki rozszerzonej — startujemy z wyborem działu. Dostępne dziś: **Trygonometria**. W przygotowaniu: *Funkcje, Planimetria, Geometria analityczna, Ciągi, Probabilitata i statystyka*.
+Sześć działów do wyboru, każdy z własnym zestawem podstron (teoria / wzory / zadania / trener):
+- **Trygonometria** — okrąg, tabela 0–360°, wzory z weryfikatorem, 111 zadań, trener z 8-etapową ścieżką
+- **Geometria analityczna** — teoria, wzory i 129 zadań z rozwiązaniami + dedykowany trener
+- **Funkcje, Planimetria, Ciągi, Probabilitata i statystyka** — teoria i zestawy startowe (kolejne zadania w przygotowaniu)
 
 ### 📊 Okrąg trygonometryczny
 - Płynne przeciąganie palcem z **przyciąganiem do kątów charakterystycznych** (±3°)
@@ -45,9 +48,9 @@ Aplikacja rośnie w kierunku pełnej matematyki rozszerzonej — startujemy z wy
 - **Pełne zestawienia działów** (teoria + wzory + zadania z rozwiązaniami) wbudowane w aplikację — Trygonometria (111 zadań) i Geometria analityczna (129 zadań), z nawigacją po sekcjach
 
 ### 🔥 Trener 
-- 4 tryby: *Kąty 0–360°, Ćwiartki & znaki, Wzory redukcyjne, Arkusze zadań*
-- **XP, poziomy, serie (combo), serduszka**, tryb na czas (30/15/8 s) i konfetti
-- **Ścieżka 8 etapów** z uczciwą progresją gwiazdek (2 poprawne odpowiedzi = ⭐)
+- Trygonometria: 4 tryby — *Kąty 0–360°, Ćwiartki & znaki, Wzory redukcyjne, Zadania maturalne* + **Ścieżka 8 etapów** z progresją gwiazdek (2 poprawne odpowiedzi = ⭐)
+- Geometria analityczna: *Wzory i własności, Obliczenia (generatory), Zadania (fiszki)* z samoceną synchronizującą ✓ z bazą zadań
+- **XP, poziomy, serie (combo), serduszka** (wspólne dla trenerów), tryb na czas (30/15/8 s) i konfetti
 
 ### 🧮 Kalkulatory
 - Trójkąt prostokątny, punkt P(a, b) w układzie współrzędnych, konwerter **stopnie ⇄ radiany** — wszystkie z żywą wizualizacją SVG
@@ -57,7 +60,7 @@ Aplikacja rośnie w kierunku pełnej matematyki rozszerzonej — startujemy z wy
 ## 📥 Instalacja (Android)
 
 1. Wejdź w [**Releases**](https://github.com/KubeKoslaw/Matma/releases)
-2. Pobierz `Trygonometria.apk` z najnowszej wersji
+2. Pobierz APK z najnowszej wersji
 3. Zezwól na instalację z nieznanych źródeł i zainstaluj
 
 > Wymagany **Android 7.0+** (minSdk 24). Aplikacja działa **w pełni offline** — wszystkie treści (w tym renderer wzorów KaTeX) są wbudowane.
@@ -66,40 +69,43 @@ Aplikacja rośnie w kierunku pełnej matematyki rozszerzonej — startujemy z wy
 
 ## 🛠 Budowanie ze źródeł
 
-**Android** (wymagany Android SDK, API 35):
 ```bash
+npm install
+npm run build        # build:materials + vite build → android/app/src/main/assets/www
 cd android
 ./gradlew assembleDebug
 # APK: android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-**Web / PWA** — katalog główny to zwykła strona statyczna:
+**Web / PWA (tryb dev):**
 ```bash
-python3 -m http.server 8080
-# http://localhost:8080
+npm run dev          # serwer Vite z HMR
 ```
-
-Synchronizacja wspólnej bazy kodu web ↔ Android:
-```bash
-npm run sync:www   # katalog główny → android/app/src/main/assets/www
-npm run sync:root  # android/app/src/main/assets/www → katalog główny
-```
+Produkcyjny build web ląduje w `android/app/src/main/assets/www` — można go serwować dowolnym serwerem statycznym (np. `npx vite preview --outDir android/app/src/main/assets/www`).
 
 ---
 
 ## 🗂 Struktura projektu
 
 ```
-├── index.html, css/, js/     # wspólny kod aplikacji (PWA)
-│   └── js/modules/           # hub, okrąg, tabela, wzory, zadania, trener, kalkulatory
-├── vendor/                   # KaTeX + Lucide (offline)
-├── android/                  # natywna powłoka Android (WebView)
-│   └── app/src/main/assets/www/   # kopia kodu web wklejana do APK
-├── scripts/                  # narzędzia do przygotowania treści działów
-└── docs/screenshots/         # zrzuty ekranu do README
+├── index.html, vite.config.ts, tsconfig.json
+├── public/                  # manifest PWA, ikona, service worker (generowany)
+├── src/
+│   ├── App.tsx              # powłoka: routing ekranów, nagłówek, nawigacja, motywy
+│   ├── dzialy.ts            # rejestr działów (pojedyncze źródło prawdy)
+│   ├── components/          # hub, materiały, okrąg, tabela, wzory, zadania, kalkulatory
+│   ├── features/trainer/    # trenerzy (wspólny silnik + trygonometria + działowy)
+│   ├── lib/                 # markdown, KaTeX, konfetti, dźwięki, toasty, motywy SVG
+│   └── data/generated/      # dane materiałów z markdownu (npm run build:materials)
+├── Trygonometria/, Geometria Analityczna/, …
+│                            # źródła markdown działów (zadania_odpowiedzi_rozwiazania.md)
+│                            # + zdjęcia referencyjne (poza gitem)
+├── android/                 # natywna powłoka Android (WebView); www/ budowana w CI
+├── scripts/                 # build_materials, konwersje danych, narzędzia
+└── docs/screenshots/        # zrzuty ekranu do README
 ```
 
-Warstwa Android to minimalny wrapper: `WebView` + `WebViewAssetLoader` (bezpieczny lokalny origin dla ES modules), insety systemowe przekazywane do strony jako zmienne CSS (`--safe-top` / `--safe-bottom` / `--kb-bottom`).
+Warstwa Android to minimalny wrapper: `WebView` + `WebViewAssetLoader` (bezpieczny lokalny origin), insety systemowe przekazywane do strony jako zmienne CSS (`--safe-top` / `--safe-bottom` / `--kb-bottom`). Build Vite trafia wprost do `android/app/src/main/assets/www` (katalog poza gitem, budowany w CI).
 
 ---
 
@@ -107,11 +113,12 @@ Warstwa Android to minimalny wrapper: `WebView` + `WebViewAssetLoader` (bezpiecz
 
 | Warstwa | Technologia |
 |---|---|
-| UI | Vanilla JS (ES modules), CSS z podwójnym motywem (jasny/ciemny) |
-| Wzory | [KaTeX](https://katex.org) (vendored, offline) |
-| Ikony | [Lucide](https://lucide.dev) (vendored, offline) |
+| UI | React 19 + Vite 7 + TypeScript (strict) |
+| Wzory | [KaTeX](https://katex.org) (npm) |
+| Ikony | [Lucide](https://lucide.dev) (lucide-react) |
 | Grafika interaktywna | Canvas 2D (okrąg), SVG (kalkulatory) |
-| Android | WebView + WebViewAssetLoader, Gradle Kotlin DSL, minSdk 24 / target 35 |
+| PWA | vite-plugin-pwa (precache z haszami, autoUpdate) |
+| Android | WebView + WebViewAssetLoader, Gradle Kotlin DSL, minSdk 24 / target 36 |
 
 ---
 
@@ -119,10 +126,9 @@ Warstwa Android to minimalny wrapper: `WebView` + `WebViewAssetLoader` (bezpiecz
 
 - [x] Trygonometria (kompletna)
 - [x] Geometria analityczna — teoria, wzory i 129 zadań z rozwiązaniami
-- [ ] Funkcje — *zadania w przygotowaniu*
-- [ ] Planimetria — *zadania w przygotowaniu*
-- [ ] Ciągi — *zadania w przygotowaniu*
-- [ ] Probabilitata i statystyka — *zadania w przygotowaniu*
+- [x] Funkcje, Planimetria, Ciągi, Probabilitata i statystyka — teoria i zestawy startowe
+- [ ] Rozbudowa zestawów zadań dla pozostałych działów
+- [ ] Trenerzy dla kolejnych działów
 - [ ] Tryb nauki pytaniami otwartymi z oceną kroków
 
 ---
