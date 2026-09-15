@@ -71,6 +71,8 @@ export default function TrygTrainer() {
     stageId?: number | null;
     mode?: QuickMode;
     hearts?: number;
+    /** Świeżo wybrany diff timera (cykl zmieniony w tej samej turze) */
+    timerDiff?: "easy" | "medium" | "hard";
   }
 
   const nextQuestion = useCallback(
@@ -78,6 +80,7 @@ export default function TrygTrainer() {
       const stageId = opts.stageId !== undefined ? opts.stageId : activeStageId;
       const m = opts.mode ?? mode;
       const hearts = opts.hearts ?? stats.hearts;
+      const timerDiff = opts.timerDiff ?? TIMER_CYCLES[timerCycleIndex].diff;
 
       timer.stop();
       setAnswered(false);
@@ -94,7 +97,7 @@ export default function TrygTrainer() {
       const q = generateFor(stageId, m);
       setQuestion(q);
       if (timerModeRef.current) {
-        timer.start(timerSecondsFor(TIMER_CYCLES[timerCycleIndex].diff));
+        timer.start(timerSecondsFor(timerDiff));
       }
     },
     [activeStageId, mode, stats.hearts, timerCycleIndex, generateFor, timer]
@@ -199,7 +202,8 @@ export default function TrygTrainer() {
     const nextIdx = (timerCycleIndex + 1) % TIMER_CYCLES.length;
     setTimerCycleIndex(nextIdx);
     timerModeRef.current = TIMER_CYCLES[nextIdx].mode;
-    nextRef.current();
+    // przekazujemy diff świeżo wybranego cyklu — stan byłby jeszcze stary
+    nextRef.current({ timerDiff: TIMER_CYCLES[nextIdx].diff });
   };
 
   const switchMode = (m: QuickMode) => {

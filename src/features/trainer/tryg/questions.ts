@@ -82,7 +82,7 @@ export function generateValuesQuestion(): QuizQuestion {
     math: targetMath,
     options,
     correctIndex,
-    explanation: `Dla kąta ${pickedDeg}° (${angleObj.radLatex}): ${angleObj.quadrant}. Wartość: \\(\\${pickedFunc}(${pickedDeg}^\\circ) = ${correctVal}\\).`
+    explanation: `Dla kąta ${pickedDeg}° (\\(${angleObj.radLatex}\\)): ${angleObj.quadrant}. Wartość: \\(\\${pickedFunc}(${pickedDeg}^\\circ) = ${correctVal}\\).`
   };
 }
 

@@ -68,6 +68,7 @@ export default function DzialTrainer({ dzial }: { dzial: Dzial }) {
   }, [dzial.id]);
 
   const nextRef = useRef<() => void>(() => {});
+  const pendingTimerDiff = useRef<"easy" | "medium" | "hard" | null>(null);
 
   const nextQuestion = useCallback(() => {
     timer.stop();
@@ -109,7 +110,9 @@ export default function DzialTrainer({ dzial }: { dzial: Dzial }) {
     const q = stateRef.current.mode === "formulas" ? bankNow.genFormulaQuestion() : pickOne(bankNow.generators)();
     setQuestion(q);
     if (timerModeRef.current) {
-      timer.start(timerSecondsFor(TIMER_CYCLES[timerCycleIndex].diff));
+      const diff = pendingTimerDiff.current ?? TIMER_CYCLES[timerCycleIndex].diff;
+      pendingTimerDiff.current = null;
+      timer.start(timerSecondsFor(diff));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stats.hearts, materialTasks, timerCycleIndex, dzial.id, timer]);
@@ -206,6 +209,8 @@ export default function DzialTrainer({ dzial }: { dzial: Dzial }) {
     const nextIdx = (timerCycleIndex + 1) % TIMER_CYCLES.length;
     setTimerCycleIndex(nextIdx);
     timerModeRef.current = TIMER_CYCLES[nextIdx].mode;
+    // przekazujemy diff świeżo wybranego cyklu — stan byłby jeszcze stary
+    pendingTimerDiff.current = TIMER_CYCLES[nextIdx].diff;
     nextRef.current();
   };
 

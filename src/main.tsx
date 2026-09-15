@@ -1,6 +1,7 @@
 // main.tsx - Punkt wejścia aplikacji React
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { registerSW } from "virtual:pwa-register";
 import "katex/dist/katex.min.css";
 import "./styles/app.css";
 import "./lib/toast";
@@ -11,9 +12,10 @@ import App from "./App";
 const savedTheme = localStorage.getItem("trig_theme") || "dark";
 document.documentElement.setAttribute("data-theme", savedTheme);
 
-// Service Worker (tylko http/https; w WebView appassets też https — SW jest network-only)
+// PWA: service worker generowany przez vite-plugin-pwa (autoUpdate);
+// w WebView appassets rejestracja może się nie powieść — pomijamy ciszo.
 if ("serviceWorker" in navigator && window.location.protocol.startsWith("http")) {
-  navigator.serviceWorker.register("sw.js").catch((err) => {
+  registerSW({ immediate: true }).catch((err) => {
     console.log("ServiceWorker registration skipped or failed:", err);
   });
 }

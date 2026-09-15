@@ -1,0 +1,567 @@
+// formulasData.ts - Kompendium wzorów trygonometrycznych i weryfikator tożsamości
+
+export interface FormulaCategory {
+  id: string;
+  name: string;
+}
+
+export interface Formula {
+  id: string;
+  category: string;
+  title: string;
+  description: string;
+  latex: string;
+  notes?: string;
+  hasVerifier: boolean;
+  needsBeta?: boolean;
+  lhsLatex?: string;
+  rhsLatex?: string;
+  evalLhs?: (aRad: number, bRad: number) => number;
+  evalRhs?: (aRad: number, bRad: number) => number;
+}
+
+export interface ReductionExplanation {
+  normDeg: number;
+  quadrant: string;
+  baseAngle: number;
+  sign: string;
+  ruleText: string;
+  steps: string[];
+  finalVal: number;
+}
+
+export const FORMULA_CATEGORIES: FormulaCategory[] = [
+  { id: "all", name: "Wszystkie wzory" },
+  { id: "def", name: "Definicje & Trójkąt" },
+  { id: "basic", name: "Tożsamości podstawowe" },
+  { id: "reduction", name: "Wzory redukcyjne" },
+  { id: "sum_diff", name: "Suma i różnica kątów" },
+  { id: "double", name: "Podwojony argument" },
+  { id: "sum_functions", name: "Sumy i różnice funkcji" },
+  { id: "half", name: "Argument połówkowy" },
+  { id: "triangles", name: "Twierdzenie sinusów i cosinusów" }
+];
+
+export const FORMULAS: Formula[] = [
+  // --- Definicje ---
+  {
+    id: "def_triangle",
+    category: "def",
+    title: "Definicje w trójkącie prostokątnym",
+    description: "Dla kąta ostrego α w trójkącie o przyprostokątnych a, b i przeciwprostokątnej c:",
+    latex: "\\begin{aligned} \\sin\\alpha &= \\frac{b}{c}, & \\cos\\alpha &= \\frac{a}{c} \\\\[4pt] \\text{tg}\\alpha &= \\frac{b}{a}, & \\text{ctg}\\alpha &= \\frac{a}{b} \\end{aligned}",
+    notes: "a - przyprostokątna przyległa, b - przyprostokątna naprzeciwko, c - przeciwprostokątna.",
+    hasVerifier: false
+  },
+  {
+    id: "def_circle",
+    category: "def",
+    title: "Definicje dowolnego kąta w układzie współrzędnych",
+    description: "Niech P(a,b) będzie punktem na końcowym ramieniu kąta α, a c = √(a² + b²) promieniem wodzącym:",
+    latex: "\\begin{aligned} \\sin\\alpha &= \\frac{b}{c}, & \\cos\\alpha &= \\frac{a}{c} \\\\[4pt] \\text{tg}\\alpha &= \\frac{b}{a} \\ (a \\neq 0), & \\text{ctg}\\alpha &= \\frac{a}{b} \\ (b \\neq 0) \\end{aligned}",
+    notes: "Umożliwia uogólnienie funkcji na dowolne kąty rzeczywiste, w tym ujemne i większe niż 360°.",
+    hasVerifier: false
+  },
+  {
+    id: "rad_deg",
+    category: "def",
+    title: "Związek miary stopniowej i łukowej",
+    description: "Przeliczanie między stopniami (α_S) a radianami (α_R):",
+    latex: "\\begin{aligned} \\alpha_R &= \\frac{\\alpha_S}{180^\\circ} \\cdot \\pi \\\\[4pt] \\alpha_S &= \\frac{\\alpha_R}{\\pi} \\cdot 180^\\circ \\end{aligned}",
+    notes: "1 rad ≈ 57.2958° (57°17'45''). 180° = π rad, 360° = 2π rad.",
+    hasVerifier: false
+  },
+
+  // --- Podstawowe tożsamości ---
+  {
+    id: "pythagorean",
+    category: "basic",
+    title: "Jedynka trygonometryczna",
+    description: "Fundamentalna tożsamość trygonometryczna zachodząca dla każdego kąta α ∈ R:",
+    latex: "\\sin^2\\alpha + \\cos^2\\alpha = 1",
+    notes: "Równoważnie: sin²α = 1 - cos²α oraz cos²α = 1 - sin²α.",
+    hasVerifier: true,
+    lhsLatex: "\\sin^2\\alpha + \\cos^2\\alpha",
+    rhsLatex: "1",
+    evalLhs: (aRad) => Math.pow(Math.sin(aRad), 2) + Math.pow(Math.cos(aRad), 2),
+    evalRhs: () => 1
+  },
+  {
+    id: "tg_def",
+    category: "basic",
+    title: "Tangens przez sinus i cosinus",
+    description: "Związek tangensa z sinusem i cosinusem:",
+    latex: "\\text{tg}\\alpha = \\frac{\\sin\\alpha}{\\cos\\alpha}, \\quad \\alpha \\neq \\frac{\\pi}{2} + k\\pi",
+    notes: "W mianowniku cosα ≠ 0, stąd tangens nie istnieje dla 90°, 270°, etc.",
+    hasVerifier: true,
+    lhsLatex: "\\text{tg}\\alpha",
+    rhsLatex: "\\frac{\\sin\\alpha}{\\cos\\alpha}",
+    evalLhs: (aRad) => Math.tan(aRad),
+    evalRhs: (aRad) => Math.sin(aRad) / Math.cos(aRad)
+  },
+  {
+    id: "ctg_def",
+    category: "basic",
+    title: "Cotangens przez cosinus i sinus",
+    description: "Związek cotangensa z cosinusem i sinusem:",
+    latex: "\\text{ctg}\\alpha = \\frac{\\cos\\alpha}{\\sin\\alpha}, \\quad \\alpha \\neq k\\pi",
+    notes: "W mianowniku sinα ≠ 0, stąd cotangens nie istnieje dla 0°, 180°, 360°, etc.",
+    hasVerifier: true,
+    lhsLatex: "\\text{ctg}\\alpha",
+    rhsLatex: "\\frac{\\cos\\alpha}{\\sin\\alpha}",
+    evalLhs: (aRad) => 1 / Math.tan(aRad),
+    evalRhs: (aRad) => Math.cos(aRad) / Math.sin(aRad)
+  },
+  {
+    id: "tg_ctg_prod",
+    category: "basic",
+    title: "Iloczyn tangensa i cotangensa",
+    description: "Dla kątów, dla których obie funkcje są określone:",
+    latex: "\\text{tg}\\alpha \\cdot \\text{ctg}\\alpha = 1, \\quad \\alpha \\neq \\frac{k\\pi}{2}",
+    notes: "Wynika bezpośrednio z faktu, że ctgα jest odwrotnością tgα.",
+    hasVerifier: true,
+    lhsLatex: "\\text{tg}\\alpha \\cdot \\text{ctg}\\alpha",
+    rhsLatex: "1",
+    evalLhs: (aRad) => Math.tan(aRad) * (1 / Math.tan(aRad)),
+    evalRhs: () => 1
+  },
+  {
+    id: "one_plus_tg2",
+    category: "basic",
+    title: "Związek 1 + tg²α z cosinusem (z zadania 10.9 b)",
+    description: "Przydatne przy wyznaczaniu cosinusa bezpośrednio ze znajomości tangensa:",
+    latex: "1 + \\text{tg}^2\\alpha = \\frac{1}{\\cos^2\\alpha}",
+    notes: "Równoważnie: (1 + tg²α) · cos²α = 1.",
+    hasVerifier: true,
+    lhsLatex: "1 + \\text{tg}^2\\alpha",
+    rhsLatex: "\\frac{1}{\\cos^2\\alpha}",
+    evalLhs: (aRad) => 1 + Math.pow(Math.tan(aRad), 2),
+    evalRhs: (aRad) => 1 / Math.pow(Math.cos(aRad), 2)
+  },
+  {
+    id: "comp_angles",
+    category: "basic",
+    title: "Kąty dopełniające (90° - α)",
+    description: "Dla kąta ostrego funkcje kąta dopełniającego przechodzą w kofunkcje:",
+    latex: "\\begin{aligned} \\sin(90^\\circ - \\alpha) &= \\cos\\alpha \\\\[3pt] \\cos(90^\\circ - \\alpha) &= \\sin\\alpha \\\\[3pt] \\text{tg}(90^\\circ - \\alpha) &= \\text{ctg}\\alpha \\end{aligned}",
+    notes: "Np. sin 70° = cos 20°, cos 34° = sin 56° (zadanie 10.8 b).",
+    hasVerifier: true,
+    lhsLatex: "\\sin(90^\\circ - \\alpha)",
+    rhsLatex: "\\cos\\alpha",
+    evalLhs: (aRad) => Math.sin(Math.PI / 2 - aRad),
+    evalRhs: (aRad) => Math.cos(aRad)
+  },
+
+  // --- Suma i różnica kątów ---
+  {
+    id: "sin_sum",
+    category: "sum_diff",
+    title: "Sinus sumy kątów",
+    description: "Wzór na sinus sumy dwóch kątów:",
+    latex: "\\sin(\\alpha + \\beta) = \\sin\\alpha\\cos\\beta + \\cos\\alpha\\sin\\beta",
+    notes: "Pozwala obliczać wartości np. dla 75° = 45° + 30° lub 105° = 60° + 45°.",
+    hasVerifier: true,
+    needsBeta: true,
+    lhsLatex: "\\sin(\\alpha + \\beta)",
+    rhsLatex: "\\sin\\alpha\\cos\\beta + \\cos\\alpha\\sin\\beta",
+    evalLhs: (aRad, bRad) => Math.sin(aRad + bRad),
+    evalRhs: (aRad, bRad) => Math.sin(aRad) * Math.cos(bRad) + Math.cos(aRad) * Math.sin(bRad)
+  },
+  {
+    id: "sin_diff",
+    category: "sum_diff",
+    title: "Sinus różnicy kątów",
+    description: "Wzór na sinus różnicy dwóch kątów:",
+    latex: "\\sin(\\alpha - \\beta) = \\sin\\alpha\\cos\\beta - \\cos\\alpha\\sin\\beta",
+    notes: "Pozwala obliczać np. sin 15° = sin(45° - 30°) = (√6 - √2)/4.",
+    hasVerifier: true,
+    needsBeta: true,
+    lhsLatex: "\\sin(\\alpha - \\beta)",
+    rhsLatex: "\\sin\\alpha\\cos\\beta - \\cos\\alpha\\sin\\beta",
+    evalLhs: (aRad, bRad) => Math.sin(aRad - bRad),
+    evalRhs: (aRad, bRad) => Math.sin(aRad) * Math.cos(bRad) - Math.cos(aRad) * Math.sin(bRad)
+  },
+  {
+    id: "cos_sum",
+    category: "sum_diff",
+    title: "Cosinus sumy kątów",
+    description: "Wzór na cosinus sumy (uwaga na minus między iloczynami!):",
+    latex: "\\cos(\\alpha + \\beta) = \\cos\\alpha\\cos\\beta - \\sin\\alpha\\sin\\beta",
+    notes: "Znak zmienia się na przeciwny (-).",
+    hasVerifier: true,
+    needsBeta: true,
+    lhsLatex: "\\cos(\\alpha + \\beta)",
+    rhsLatex: "\\cos\\alpha\\cos\\beta - \\sin\\alpha\\sin\\beta",
+    evalLhs: (aRad, bRad) => Math.cos(aRad + bRad),
+    evalRhs: (aRad, bRad) => Math.cos(aRad) * Math.cos(bRad) - Math.sin(aRad) * Math.sin(bRad)
+  },
+  {
+    id: "cos_diff",
+    category: "sum_diff",
+    title: "Cosinus różnicy kątów",
+    description: "Wzór na cosinus różnicy:",
+    latex: "\\cos(\\alpha - \\beta) = \\cos\\alpha\\cos\\beta + \\sin\\alpha\\sin\\beta",
+    notes: "Znak w rozwinięciu to plus (+).",
+    hasVerifier: true,
+    needsBeta: true,
+    lhsLatex: "\\cos(\\alpha - \\beta)",
+    rhsLatex: "\\cos\\alpha\\cos\\beta + \\sin\\alpha\\sin\\beta",
+    evalLhs: (aRad, bRad) => Math.cos(aRad - bRad),
+    evalRhs: (aRad, bRad) => Math.cos(aRad) * Math.cos(bRad) + Math.sin(aRad) * Math.sin(bRad)
+  },
+  {
+    id: "tg_sum",
+    category: "sum_diff",
+    title: "Tangens sumy kątów",
+    description: "Wzór na tangens sumy:",
+    latex: "\\text{tg}(\\alpha + \\beta) = \\frac{\\text{tg}\\alpha + \\text{tg}\\beta}{1 - \\text{tg}\\alpha\\text{tg}\\beta}",
+    notes: "Stosowany np. w zadaniu 10.21 (prosta nachylona o 45° bardziej).",
+    hasVerifier: true,
+    needsBeta: true,
+    lhsLatex: "\\text{tg}(\\alpha + \\beta)",
+    rhsLatex: "\\frac{\\text{tg}\\alpha + \\text{tg}\\beta}{1 - \\text{tg}\\alpha\\text{tg}\\beta}",
+    evalLhs: (aRad, bRad) => Math.tan(aRad + bRad),
+    evalRhs: (aRad, bRad) => (Math.tan(aRad) + Math.tan(bRad)) / (1 - Math.tan(aRad) * Math.tan(bRad))
+  },
+  {
+    id: "tg_diff",
+    category: "sum_diff",
+    title: "Tangens różnicy kątów",
+    description: "Wzór na tangens różnicy:",
+    latex: "\\text{tg}(\\alpha - \\beta) = \\frac{\\text{tg}\\alpha - \\text{tg}\\beta}{1 + \\text{tg}\\alpha\\text{tg}\\beta}",
+    notes: "Pozwala badać kąty między dwoma prostymi o danych współczynnikach kierunkowych.",
+    hasVerifier: true,
+    needsBeta: true,
+    lhsLatex: "\\text{tg}(\\alpha - \\beta)",
+    rhsLatex: "\\frac{\\text{tg}\\alpha - \\text{tg}\\beta}{1 + \\text{tg}\\alpha\\text{tg}\\beta}",
+    evalLhs: (aRad, bRad) => Math.tan(aRad - bRad),
+    evalRhs: (aRad, bRad) => (Math.tan(aRad) - Math.tan(bRad)) / (1 + Math.tan(aRad) * Math.tan(bRad))
+  },
+
+  // --- Podwojony argument ---
+  {
+    id: "sin_double",
+    category: "double",
+    title: "Sinus podwojonego argumentu",
+    description: "Podstawowy wzór na sin 2α:",
+    latex: "\\sin 2\\alpha = 2\\sin\\alpha\\cos\\alpha",
+    notes: "Niezbędny przy rozwiązywaniu równań trygonometrycznych i upraszczaniu iloczynów.",
+    hasVerifier: true,
+    lhsLatex: "\\sin 2\\alpha",
+    rhsLatex: "2\\sin\\alpha\\cos\\alpha",
+    evalLhs: (aRad) => Math.sin(2 * aRad),
+    evalRhs: (aRad) => 2 * Math.sin(aRad) * Math.cos(aRad)
+  },
+  {
+    id: "cos_double_1",
+    category: "double",
+    title: "Cosinus podwojonego argumentu (postać podstawowa)",
+    description: "Różnica kwadratów cosinusa i sinusa:",
+    latex: "\\cos 2\\alpha = \\cos^2\\alpha - \\sin^2\\alpha",
+    notes: "Uwaga: nie mylić z jedynką trygonometryczną cos²α + sin²α = 1.",
+    hasVerifier: true,
+    lhsLatex: "\\cos 2\\alpha",
+    rhsLatex: "\\cos^2\\alpha - \\sin^2\\alpha",
+    evalLhs: (aRad) => Math.cos(2 * aRad),
+    evalRhs: (aRad) => Math.pow(Math.cos(aRad), 2) - Math.pow(Math.sin(aRad), 2)
+  },
+  {
+    id: "cos_double_2",
+    category: "double",
+    title: "Cosinus podwojonego argumentu (przez cosinus)",
+    description: "Postać wykorzystująca wyłącznie cosinus:",
+    latex: "\\cos 2\\alpha = 2\\cos^2\\alpha - 1",
+    notes: "Bardzo częsta w równaniach kwadratowych względem cosinusa (np. zadanie 501).",
+    hasVerifier: true,
+    lhsLatex: "\\cos 2\\alpha",
+    rhsLatex: "2\\cos^2\\alpha - 1",
+    evalLhs: (aRad) => Math.cos(2 * aRad),
+    evalRhs: (aRad) => 2 * Math.pow(Math.cos(aRad), 2) - 1
+  },
+  {
+    id: "cos_double_3",
+    category: "double",
+    title: "Cosinus podwojonego argumentu (przez sinus)",
+    description: "Postać wykorzystująca wyłącznie sinus:",
+    latex: "\\cos 2\\alpha = 1 - 2\\sin^2\\alpha",
+    notes: "Częsta przy równaniach kwadratowych względem sinusa.",
+    hasVerifier: true,
+    lhsLatex: "\\cos 2\\alpha",
+    rhsLatex: "1 - 2\\sin^2\\alpha",
+    evalLhs: (aRad) => Math.cos(2 * aRad),
+    evalRhs: (aRad) => 1 - 2 * Math.pow(Math.sin(aRad), 2)
+  },
+  {
+    id: "tg_double",
+    category: "double",
+    title: "Tangens podwojonego argumentu",
+    description: "Tangens kąta podwojonego:",
+    latex: "\\text{tg} 2\\alpha = \\frac{2\\text{tg}\\alpha}{1 - \\text{tg}^2\\alpha}",
+    notes: "Wynika bezpośrednio ze wzoru na tg(α+β) dla α=β.",
+    hasVerifier: true,
+    lhsLatex: "\\text{tg} 2\\alpha",
+    rhsLatex: "\\frac{2\\text{tg}\\alpha}{1 - \\text{tg}^2\\alpha}",
+    evalLhs: (aRad) => Math.tan(2 * aRad),
+    evalRhs: (aRad) => (2 * Math.tan(aRad)) / (1 - Math.pow(Math.tan(aRad), 2))
+  },
+  {
+    id: "sin_double_tg",
+    category: "double",
+    title: "Sinus 2α wyrażony przez tg α (ze strony 83)",
+    description: "Postać uniwersalna sinusa przez tangens:",
+    latex: "\\sin 2\\alpha = \\frac{2\\text{tg}\\alpha}{1 + \\text{tg}^2\\alpha}",
+    notes: "Wykorzystywana w zaawansowanych podstawieniach i tożsamościach (np. zadanie 486).",
+    hasVerifier: true,
+    lhsLatex: "\\sin 2\\alpha",
+    rhsLatex: "\\frac{2\\text{tg}\\alpha}{1 + \\text{tg}^2\\alpha}",
+    evalLhs: (aRad) => Math.sin(2 * aRad),
+    evalRhs: (aRad) => (2 * Math.tan(aRad)) / (1 + Math.pow(Math.tan(aRad), 2))
+  },
+  {
+    id: "cos_double_tg",
+    category: "double",
+    title: "Cosinus 2α wyrażony przez tg α (ze strony 83)",
+    description: "Postać uniwersalna cosinusa przez tangens:",
+    latex: "\\cos 2\\alpha = \\frac{1 - \\text{tg}^2\\alpha}{1 + \\text{tg}^2\\alpha}",
+    notes: "Kluczowa tożsamość w zadaniu 486: (1-tg²α)/(1+tg²α) = cos 2α.",
+    hasVerifier: true,
+    lhsLatex: "\\cos 2\\alpha",
+    rhsLatex: "\\frac{1 - \\text{tg}^2\\alpha}{1 + \\text{tg}^2\\alpha}",
+    evalLhs: (aRad) => Math.cos(2 * aRad),
+    evalRhs: (aRad) => (1 - Math.pow(Math.tan(aRad), 2)) / (1 + Math.pow(Math.tan(aRad), 2))
+  },
+
+  // --- Sumy i różnice funkcji ---
+  {
+    id: "sum_sin",
+    category: "sum_functions",
+    title: "Suma sinusów",
+    description: "Zamiana sumy sinusów na iloczyn:",
+    latex: "\\sin\\alpha + \\sin\\beta = 2\\sin\\frac{\\alpha+\\beta}{2}\\cos\\frac{\\alpha-\\beta}{2}",
+    notes: "Niezbędne do rozkładu na czynniki w równaniach trygonometrycznych (np. sin 5x + sin x = 0).",
+    hasVerifier: true,
+    needsBeta: true,
+    lhsLatex: "\\sin\\alpha + \\sin\\beta",
+    rhsLatex: "2\\sin\\frac{\\alpha+\\beta}{2}\\cos\\frac{\\alpha-\\beta}{2}",
+    evalLhs: (aRad, bRad) => Math.sin(aRad) + Math.sin(bRad),
+    evalRhs: (aRad, bRad) => 2 * Math.sin((aRad + bRad) / 2) * Math.cos((aRad - bRad) / 2)
+  },
+  {
+    id: "diff_sin",
+    category: "sum_functions",
+    title: "Różnica sinusów",
+    description: "Zamiana różnicy sinusów na iloczyn:",
+    latex: "\\sin\\alpha - \\sin\\beta = 2\\sin\\frac{\\alpha-\\beta}{2}\\cos\\frac{\\alpha+\\beta}{2}",
+    notes: "Stosowana w zadaniach typu sin 3x - sin x = ...",
+    hasVerifier: true,
+    needsBeta: true,
+    lhsLatex: "\\sin\\alpha - \\sin\\beta",
+    rhsLatex: "2\\sin\\frac{\\alpha-\\beta}{2}\\cos\\frac{\\alpha+\\beta}{2}",
+    evalLhs: (aRad, bRad) => Math.sin(aRad) - Math.sin(bRad),
+    evalRhs: (aRad, bRad) => 2 * Math.sin((aRad - bRad) / 2) * Math.cos((aRad + bRad) / 2)
+  },
+  {
+    id: "sum_cos",
+    category: "sum_functions",
+    title: "Suma cosinusów",
+    description: "Zamiana sumy cosinusów na iloczyn:",
+    latex: "\\cos\\alpha + \\cos\\beta = 2\\cos\\frac{\\alpha+\\beta}{2}\\cos\\frac{\\alpha-\\beta}{2}",
+    notes: "Daje iloczyn dwóch cosinusów.",
+    hasVerifier: true,
+    needsBeta: true,
+    lhsLatex: "\\cos\\alpha + \\cos\\beta",
+    rhsLatex: "2\\cos\\frac{\\alpha+\\beta}{2}\\cos\\frac{\\alpha-\\beta}{2}",
+    evalLhs: (aRad, bRad) => Math.cos(aRad) + Math.cos(bRad),
+    evalRhs: (aRad, bRad) => 2 * Math.cos((aRad + bRad) / 2) * Math.cos((aRad - bRad) / 2)
+  },
+  {
+    id: "diff_cos",
+    category: "sum_functions",
+    title: "Różnica cosinusów",
+    description: "Zamiana różnicy cosinusów na iloczyn (uwaga na minus na początku!):",
+    latex: "\\cos\\alpha - \\cos\\beta = -2\\sin\\frac{\\alpha+\\beta}{2}\\sin\\frac{\\alpha-\\beta}{2}",
+    notes: "Iloczyn dwóch sinusów ze znakiem ujemnym.",
+    hasVerifier: true,
+    needsBeta: true,
+    lhsLatex: "\\cos\\alpha - \\cos\\beta",
+    rhsLatex: "-2\\sin\\frac{\\alpha+\\beta}{2}\\sin\\frac{\\alpha-\\beta}{2}",
+    evalLhs: (aRad, bRad) => Math.cos(aRad) - Math.cos(bRad),
+    evalRhs: (aRad, bRad) => -2 * Math.sin((aRad + bRad) / 2) * Math.sin((aRad - bRad) / 2)
+  },
+
+  // --- Połówkowy argument ---
+  {
+    id: "half_sin",
+    category: "half",
+    title: "Kwadrat sinusa połowy kąta",
+    description: "Obniżanie stopnia potęgi lub obliczanie kąta połówkowego:",
+    latex: "\\sin^2\\frac{\\alpha}{2} = \\frac{1 - \\cos\\alpha}{2}",
+    notes: "Wynika bezpośrednio ze wzoru cos 2x = 1 - 2sin²x.",
+    hasVerifier: true,
+    lhsLatex: "\\sin^2\\frac{\\alpha}{2}",
+    rhsLatex: "\\frac{1 - \\cos\\alpha}{2}",
+    evalLhs: (aRad) => Math.pow(Math.sin(aRad / 2), 2),
+    evalRhs: (aRad) => (1 - Math.cos(aRad)) / 2
+  },
+  {
+    id: "half_cos",
+    category: "half",
+    title: "Kwadrat cosinusa połowy kąta",
+    description: "Obliczanie cosinusa kąta połówkowego:",
+    latex: "\\cos^2\\frac{\\alpha}{2} = \\frac{1 + \\cos\\alpha}{2}",
+    notes: "Wynika ze wzoru cos 2x = 2cos²x - 1.",
+    hasVerifier: true,
+    lhsLatex: "\\cos^2\\frac{\\alpha}{2}",
+    rhsLatex: "\\frac{1 + \\cos\\alpha}{2}",
+    evalLhs: (aRad) => Math.pow(Math.cos(aRad / 2), 2),
+    evalRhs: (aRad) => (1 + Math.cos(aRad)) / 2
+  },
+
+  // --- Wzory redukcyjne ---
+  {
+    id: "red_parity",
+    category: "reduction",
+    title: "Parzystość i nieparzystość funkcji",
+    description: "Cosinus jest jedyną parzystą funkcją elementarną, pozostałe są nieparzyste:",
+    latex: "\\begin{aligned} \\cos(-\\alpha) &= \\cos\\alpha \\\\[3pt] \\sin(-\\alpha) &= -\\sin\\alpha \\\\[3pt] \\text{tg}(-\\alpha) &= -\\text{tg}\\alpha \\end{aligned}",
+    notes: "Cosinus 'połyka' minus: cos(-x) = cos x.",
+    hasVerifier: true,
+    lhsLatex: "\\sin(-\\alpha)",
+    rhsLatex: "-\\sin\\alpha",
+    evalLhs: (aRad) => Math.sin(-aRad),
+    evalRhs: (aRad) => -Math.sin(aRad)
+  },
+  {
+    id: "red_pi_minus",
+    category: "reduction",
+    title: "Kąty II ćwiartki (π - α lub 180° - α)",
+    description: "W II ćwiartce sinus jest dodatni, cosinus i tangens ujemne:",
+    latex: "\\begin{aligned} \\sin(\\pi - \\alpha) &= \\sin\\alpha \\\\[3pt] \\cos(\\pi - \\alpha) &= -\\cos\\alpha \\\\[3pt] \\text{tg}(\\pi - \\alpha) &= -\\text{tg}\\alpha \\end{aligned}",
+    notes: "Funkcja nie zmienia się, znak według wierszyka ('w drugiej tylko sinus').",
+    hasVerifier: true,
+    lhsLatex: "\\cos(\\pi - \\alpha)",
+    rhsLatex: "-\\cos\\alpha",
+    evalLhs: (aRad) => Math.cos(Math.PI - aRad),
+    evalRhs: (aRad) => -Math.cos(aRad)
+  },
+  {
+    id: "red_pi_plus",
+    category: "reduction",
+    title: "Kąty III ćwiartki (π + α lub 180° + α)",
+    description: "W III ćwiartce tangens i cotangens są dodatnie, sinus i cosinus ujemne:",
+    latex: "\\begin{aligned} \\sin(\\pi + \\alpha) &= -\\sin\\alpha \\\\[3pt] \\cos(\\pi + \\alpha) &= -\\cos\\alpha \\\\[3pt] \\text{tg}(\\pi + \\alpha) &= \\text{tg}\\alpha \\end{aligned}",
+    notes: "Okres tangensa wynosi π (180°), stąd tg(π+α) = tg α.",
+    hasVerifier: true,
+    lhsLatex: "\\sin(\\pi + \\alpha)",
+    rhsLatex: "-\\sin\\alpha",
+    evalLhs: (aRad) => Math.sin(Math.PI + aRad),
+    evalRhs: (aRad) => -Math.sin(aRad)
+  },
+  {
+    id: "red_half_pi_plus",
+    category: "reduction",
+    title: "Kąty z π/2 (90° + α) - zmiana na kofunkcję",
+    description: "Przy π/2 funkcja zmienia się na kofunkcję:",
+    latex: "\\begin{aligned} \\sin\\left(\\frac{\\pi}{2} + \\alpha\\right) &= \\cos\\alpha \\\\[4pt] \\cos\\left(\\frac{\\pi}{2} + \\alpha\\right) &= -\\sin\\alpha \\end{aligned}",
+    notes: "Kąt 90°+α ląduje w II ćwiartce, gdzie sinus jest dodatni (+cos), a cosinus ujemny (-sin).",
+    hasVerifier: true,
+    lhsLatex: "\\cos\\left(\\frac{\\pi}{2} + \\alpha\\right)",
+    rhsLatex: "-\\sin\\alpha",
+    evalLhs: (aRad) => Math.cos(Math.PI / 2 + aRad),
+    evalRhs: (aRad) => -Math.sin(aRad)
+  },
+
+  // --- Trójkąty ogólne ---
+  {
+    id: "law_of_sines",
+    category: "triangles",
+    title: "Twierdzenie sinusów (Prawidło Snelliusa)",
+    description: "W dowolnym trójkącie o bokach a, b, c i kątach naprzeciwko α, β, γ oraz promieniu R okręgu opisanego:",
+    latex: "\\frac{a}{\\sin\\alpha} = \\frac{b}{\\sin\\beta} = \\frac{c}{\\sin\\gamma} = 2R",
+    notes: "Stosowane, gdy znamy dwa kąty i bok lub dwa boki i kąt naprzeciw jednego z nich.",
+    hasVerifier: false
+  },
+  {
+    id: "law_of_cosines",
+    category: "triangles",
+    title: "Twierdzenie cosinusów (Uogólnione twierdzenie Pitagorasa)",
+    description: "Kwadrat dowolnego boku trójkąta:",
+    latex: "c^2 = a^2 + b^2 - 2ab\\cos\\gamma",
+    notes: "Dla kąta prostego γ = 90° cos 90° = 0 i wzór redukuje się do c² = a² + b².",
+    hasVerifier: false
+  },
+  {
+    id: "triangle_area",
+    category: "triangles",
+    title: "Pole trójkąta z sinusem kąta",
+    description: "Pole trójkąta o dwóch bokach i kącie między nimi:",
+    latex: "P = \\frac{1}{2}ab\\sin\\gamma = \\frac{1}{2}bc\\sin\\alpha = \\frac{1}{2}ac\\sin\\beta",
+    notes: "Bardzo częsty wzór w zadaniach z geometrii na maturze.",
+    hasVerifier: false
+  }
+];
+
+// Helper do obliczania redukcji krok po kroku
+export function explainReduction(deg: number, func = "sin"): ReductionExplanation {
+  // Sprowadź kąt do 0-360
+  let normDeg = deg % 360;
+  if (normDeg < 0) normDeg += 360;
+
+  const rad = (normDeg * Math.PI) / 180;
+  let quadrant = "I";
+  let ruleText = "";
+  let baseAngle = 0;
+  let sign = "+";
+  const steps: string[] = [];
+
+  steps.push(`1. Wyjściowy kąt: **${deg}°** sprowadzamy do przedziału [0°, 360°): **${normDeg}°**.`);
+
+  if (normDeg <= 90) {
+    quadrant = "I";
+    sign = "+";
+    baseAngle = normDeg;
+    ruleText = "Kąt leży w I ćwiartce: wszystkie funkcje są dodatnie (+).";
+    steps.push(`2. ${ruleText}`);
+    steps.push(`3. Wartość jest równa bezpośrednio **${func}(${normDeg}°)**.`);
+  } else if (normDeg <= 180) {
+    quadrant = "II";
+    baseAngle = 180 - normDeg;
+    sign = (func === "sin") ? "+" : "-";
+    ruleText = "Kąt leży w II ćwiartce: tylko sinus jest dodatni (+), pozostałe ujemne (-).";
+    steps.push(`2. ${ruleText}`);
+    steps.push(`3. Przedstawiamy kąt jako **180° - ${baseAngle}°** (bez zmiany funkcji) lub **90° + ${normDeg - 90}°** (ze zmianą na kofunkcję).`);
+    steps.push(`4. Używając osi 180°: **${func}(${normDeg}°) = ${sign}${func}(${baseAngle}°) = ${sign}${func}(${baseAngle}°)**.`);
+  } else if (normDeg <= 270) {
+    quadrant = "III";
+    baseAngle = normDeg - 180;
+    sign = (func === "tg" || func === "ctg") ? "+" : "-";
+    ruleText = "Kąt leży w III ćwiartce: tangens i cotangens są dodatnie (+), sinus i cosinus ujemne (-).";
+    steps.push(`2. ${ruleText}`);
+    steps.push(`3. Przedstawiamy kąt jako **180° + ${baseAngle}°**.`);
+    steps.push(`4. Używając osi 180°: **${func}(${normDeg}°) = ${sign}${func}(${baseAngle}°) = ${sign}${func}(${baseAngle}°)**.`);
+  } else {
+    quadrant = "IV";
+    baseAngle = 360 - normDeg;
+    sign = (func === "cos") ? "+" : "-";
+    ruleText = "Kąt leży w IV ćwiartce: tylko cosinus jest dodatni (+), pozostałe ujemne (-).";
+    steps.push(`2. ${ruleText}`);
+    steps.push(`3. Przedstawiamy kąt jako **360° - ${baseAngle}°**.`);
+    steps.push(`4. Używając osi 360°: **${func}(${normDeg}°) = ${sign}${func}(${baseAngle}°) = ${sign}${func}(${baseAngle}°)**.`);
+  }
+
+  let finalVal = 0;
+  if (func === "sin") finalVal = Math.sin(rad);
+  else if (func === "cos") finalVal = Math.cos(rad);
+  else if (func === "tg") finalVal = Math.tan(rad);
+  else if (func === "ctg") finalVal = 1 / Math.tan(rad);
+
+  return {
+    normDeg,
+    quadrant,
+    baseAngle,
+    sign,
+    ruleText,
+    steps,
+    finalVal: Number(finalVal.toFixed(4))
+  };
+}
