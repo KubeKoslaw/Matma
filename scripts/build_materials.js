@@ -11,7 +11,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
-const OUT_DIR = path.resolve(ROOT, "android", "app", "src", "main", "assets", "www", "js", "data");
+const OUT_DIR = path.resolve(ROOT, "js", "data");
 
 const ID_RE = /^[a-z0-9-]+$/; // whitelist identyfikatorów materiałów
 
@@ -32,6 +32,34 @@ const MATERIALS = [
       { id: "intro", match: /WPROWADZAJĄCE/i, label: "Wprowadzające" },
       { id: "m202250", match: /202|250/, label: "Maturalne 202–250" },
       { id: "m251296", match: /251|296/, label: "Maturalne 251–296" }
+    ]
+  },
+  {
+    id: "funkcje",
+    src: path.resolve(ROOT, "Funkcje", "zadania_odpowiedzi_rozwiazania.md"),
+    groups: [
+      { id: "intro", match: /WPROWADZAJĄCE/i, label: "Wprowadzające" }
+    ]
+  },
+  {
+    id: "planimetria",
+    src: path.resolve(ROOT, "Planimetria", "zadania_odpowiedzi_rozwiazania.md"),
+    groups: [
+      { id: "intro", match: /WPROWADZAJĄCE/i, label: "Wprowadzające" }
+    ]
+  },
+  {
+    id: "ciagi",
+    src: path.resolve(ROOT, "Ciągi", "zadania_odpowiedzi_rozwiazania.md"),
+    groups: [
+      { id: "intro", match: /WPROWADZAJĄCE/i, label: "Wprowadzające" }
+    ]
+  },
+  {
+    id: "probabilitata",
+    src: path.resolve(ROOT, "Prawdopodobieństwo i Statystyka", "zadania_odpowiedzi_rozwiazania.md"),
+    groups: [
+      { id: "intro", match: /WPROWADZAJĄCE/i, label: "Wprowadzające" }
     ]
   }
 ];
