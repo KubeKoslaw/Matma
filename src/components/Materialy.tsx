@@ -4,12 +4,12 @@
 // (✓ Zrobione → konfetti + chibi + dźwięk — wzorzec trenera).
 // Dane: src/data/generated/material-*.json generowane przez `npm run build:materials`.
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { loadMaterial } from "../dzialy";
 import type { Dzial } from "../dzialy";
 import type { Material, MaterialTab, MaterialTask } from "../data/types";
 import { mdToHtml, inlineMd } from "../lib/md";
-import { renderMath } from "../lib/katex";
+import HtmlWithMath from "./HtmlWithMath";
 import {
   ENCOURAGEMENTS, celebrateSmall, celebrateGroup, celebrateAllTheory,
   pick, randomMascot
@@ -38,15 +38,6 @@ function loadProgress(dzialId: string): Progress {
     }
   } catch { /* świeży start */ }
   return { theory: {}, tasks: {} };
-}
-
-// Blok HTML z markdownu + automatyczny render KaTeX przy montowaniu
-function HtmlWithMath({ html, className }: { html: string; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (ref.current) renderMath(ref.current);
-  }, [html]);
-  return <div ref={ref} className={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 export default function Materialy({ dzial, tab }: { dzial: Dzial; tab: MaterialTab }) {

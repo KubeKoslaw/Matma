@@ -10,6 +10,8 @@ import { Icon } from "./components/icons";
 import Hub from "./components/Hub";
 import Materialy from "./components/Materialy";
 import Placeholder from "./components/Placeholder";
+import TrygTrainer from "./features/trainer/tryg/TrygTrainer";
+import DzialTrainer from "./features/trainer/dzial/DzialTrainer";
 import "./lib/celebrate"; // rejestruje window.launchConfetti / window.trainerSounds
 
 type Route =
@@ -159,7 +161,13 @@ export default function App() {
         )}
         {route.screen === "panel" && (
           <section id={PANEL_VIEW_IDS[route.panel]} className="view-panel active">
-            <Placeholder dzial={getDzial(route.dzial)} panel={route.panel} />
+              {route.panel === "trainer-tryg" ? (
+                <TrygTrainer />
+              ) : route.panel === "trainer-dzial" ? (
+                <DzialTrainer dzial={getDzial(route.dzial)} />
+              ) : (
+                <Placeholder dzial={getDzial(route.dzial)} panel={route.panel} />
+              )}
           </section>
         )}
       </main>
