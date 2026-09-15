@@ -6,104 +6,15 @@
   <title>Matematyka — zakres rozszerzony</title>
 
   <!-- PWA & Mobile Web App Meta Tags -->
-  <meta name="description" content="Kompletna interaktywna aplikacja na telefon do nauki trygonometrii: okrąg jednostkowy, pełna tabela 0-360°, baza wzorów z weryfikatorem tożsamości, zadania maturalne z rozwiązaniami krok po kroku oraz quiz." />
+  <meta name="description" content="Kompletna interaktywna aplikacja do nauki matematyki w zakresie rozszerzonym: teoria, wzory, zadania z rozwiązaniami krok po kroku oraz trenerzy quizów." />
   <meta name="theme-color" content="#0a0f1d" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Trygonometria" />
+  <meta name="apple-mobile-web-app-title" content="Matematyka" />
   <link rel="manifest" href="manifest.json" />
-
-  <!-- Vendor CSS: KaTeX -->
-  <link rel="stylesheet" href="vendor/katex/katex.min.css" />
-
-  <!-- App CSS -->
-  <link rel="stylesheet" href="css/app.css" />
 </head>
 <body>
-
-  <!-- Top App Header -->
-  <header id="app-header">
-    <div class="header-brand">
-      <div class="header-logo-icon">
-        <span>∑</span>
-      </div>
-      <div class="header-title-wrap">
-        <h1>
-          <span id="header-title-text">Matematyka</span>
-        </h1>
-      </div>
-    </div>
-
-    <div class="header-actions">
-      <button class="icon-btn" id="btn-back-hub" title="Powrót do menu działów" aria-label="Powrót do menu działów">
-        <i data-lucide="arrow-left"></i>
-      </button>
-      <button class="icon-btn" id="btn-toggle-theme" title="Zmień motyw jasny/ciemny" aria-label="Zmień motyw jasny/ciemny">
-        <i data-lucide="sun" id="theme-icon"></i>
-      </button>
-    </div>
-  </header>
-
-  <!-- Main View Container -->
-  <main id="app-main">
-    <!-- Widok 0: Menu startowe — wybór działu -->
-    <section id="view-hub" class="view-panel active">
-      <!-- Wstrzykiwane przez js/modules/hub.js -->
-    </section>
-
-    <!-- Widok 1: Okrąg trygonometryczny -->
-    <section id="view-circle" class="view-panel">
-      <!-- Wstrzykiwane przez js/modules/unitCircle.js -->
-    </section>
-
-    <!-- Widok 2: Pełna Tabela wartości 0°-360° -->
-    <section id="view-table" class="view-panel">
-      <!-- Wstrzykiwane przez js/modules/tableViewer.js -->
-    </section>
-
-    <!-- Widok 3: Kompendium Wzorów i Weryfikator -->
-    <section id="view-formulas" class="view-panel">
-      <!-- Wstrzykiwane przez js/modules/formulaVerifier.js -->
-    </section>
-
-    <!-- Widok 4: Baza Zadań z Rozwiązaniami -->
-    <section id="view-tasks" class="view-panel">
-      <!-- Wstrzykiwane przez js/modules/taskViewer.js -->
-    </section>
-
-    <!-- Widok 5: Trener i Quiz Maturalny -->
-    <section id="view-trainer" class="view-panel">
-      <!-- Wstrzykiwane przez js/modules/trainer.js -->
-    </section>
-
-    <!-- Widok 6: Kalkulatory i Narzędzia -->
-    <section id="view-calculators" class="view-panel">
-      <!-- Wstrzykiwane przez js/modules/calculators.js -->
-    </section>
-
-    <!-- Widok 7: Materiały — pełne zestawienia teorii i zadań -->
-    <section id="view-materialy" class="view-panel">
-      <!-- Wstrzykiwane przez js/modules/materialy.js -->
-    </section>
-
-    <!-- Widok 8: Trener działowy (geometria analityczna) -->
-    <section id="view-dzial-trainer" class="view-panel">
-      <!-- Wstrzykiwane przez js/modules/dzialTrainer.js -->
-    </section>
-  </main>
-
-  <!-- Bottom Navigation Bar — zawartość renderuje js/app.js per dział (wzorzec Trygonometrii) -->
-  <nav id="bottom-nav"></nav>
-
-  <!-- Toast Container -->
-  <div id="toast-container" role="status" aria-live="polite">Powiadomienie</div>
-
-  <!-- Vendor Scripts: KaTeX & Lucide Icons -->
-  <script src="vendor/katex/katex.min.js"></script>
-  <script src="vendor/katex/contrib/auto-render.min.js"></script>
-  <script src="vendor/lucide/lucide.min.js"></script>
-
-  <!-- Application Controller -->
-  <script type="module" src="js/app.js"></script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
