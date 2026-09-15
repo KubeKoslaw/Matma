@@ -80,7 +80,7 @@ const FORMULA_BANK = [
     d: ["A_1A_2 + B_1B_2 = 0", "A_1B_2 + A_2B_1 = 0", "A_1A_2 - B_1B_2 = 0"]
   },
   {
-    q: "Warunek prostopadłości prostych w postaci ogólnej:",
+    q: "Warunek prostopadłości prostych w postaci ogólnej ($A_1x + B_1y + C_1 = 0$ oraz $A_2x + B_2y + C_2 = 0$):",
     a: "A_1A_2 + B_1B_2 = 0",
     d: ["A_1B_2 - A_2B_1 = 0", "A_1A_2 - B_1B_2 = 0", "A_1B_2 + A_2B_1 = 0"]
   },
