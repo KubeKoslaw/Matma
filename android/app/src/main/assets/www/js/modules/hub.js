@@ -12,16 +12,16 @@ const DZIALY = [
   {
     id: "funkcje",
     title: "Funkcje",
-    desc: "Przygotowuję zadania ze zbiorów",
+    desc: "Teoria, wzory i zadania z rozwiązaniami",
     icon: "chart-line",
-    available: false
+    available: true
   },
   {
     id: "planimetria",
     title: "Planimetria",
-    desc: "Przygotowuję zadania ze zbiorów",
+    desc: "Teoria, wzory i zadania z rozwiązaniami",
     icon: "shapes",
-    available: false
+    available: true
   },
   {
     id: "geometria-analityczna",
@@ -33,16 +33,16 @@ const DZIALY = [
   {
     id: "ciagi",
     title: "Ciągi",
-    desc: "Przygotowuję zadania ze zbiorów",
+    desc: "Teoria, wzory i zadania z rozwiązaniami",
     icon: "list-ordered",
-    available: false
+    available: true
   },
   {
     id: "probabilitata",
     title: "Probabilitata i statystyka",
-    desc: "Przygotowuję zadania ze zbiorów",
+    desc: "Teoria, wzory i zadania z rozwiązaniami",
     icon: "dice-5",
-    available: false
+    available: true
   }
 ];
 

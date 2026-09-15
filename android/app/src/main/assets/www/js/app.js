@@ -91,19 +91,31 @@ document.addEventListener("DOMContentLoaded", () => {
 // Pierwszy widok dla danego działu (dla przyszłych działów: dodaj wpis + moduł)
 const DZIAL_START_VIEW = {
   trygonometria: "view-circle",
-  "geometria-analityczna": "view-materialy"
+  "geometria-analityczna": "view-materialy",
+  funkcje: "view-materialy",
+  planimetria: "view-materialy",
+  ciagi: "view-materialy",
+  probabilitata: "view-materialy"
 };
 
 const DZIAL_TITLES = {
   trygonometria: "Trygonometria",
-  "geometria-analityczna": "Geometria analityczna"
+  "geometria-analityczna": "Geometria analityczna",
+  funkcje: "Funkcje",
+  planimetria: "Planimetria",
+  ciagi: "Ciągi",
+  probabilitata: "Prawdopodobieństwo i statystyka"
 };
 
 // Materiały (pełne zestawienia) dostępne dla działów — moduły z treścią generuje
 // `npm run build:materials`; ścieżki wersjonowane (?v=...) gwarantują świeże dane
 const DZIAL_MATERIALS = {
   trygonometria: { module: MATERIAL_MODULES["trygonometria"] },
-  "geometria-analityczna": { module: MATERIAL_MODULES["geometria-analityczna"] }
+  "geometria-analityczna": { module: MATERIAL_MODULES["geometria-analityczna"] },
+  funkcje: { module: MATERIAL_MODULES["funkcje"] },
+  planimetria: { module: MATERIAL_MODULES["planimetria"] },
+  ciagi: { module: MATERIAL_MODULES["ciagi"] },
+  probabilitata: { module: MATERIAL_MODULES["probabilitata"] }
 };
 
 // Zakładki dolnej nawigacji per dział — wzorzec Trygonometrii:
@@ -120,13 +132,22 @@ const TRYGO_NAV = [
   { label: "Kalkulator", icon: "calculator", view: "view-calculators" }
 ];
 
+const STANDARD_DZIAL_NAV = [
+  { label: "Teoria i wzory", icon: "book-open", tab: "theory" },
+  { label: "Zadania", icon: "graduation-cap", tab: "tasks" }
+];
+
 const DZIAL_NAV = {
   trygonometria: TRYGO_NAV,
   "geometria-analityczna": [
     { label: "Teoria i wzory", icon: "book-open", tab: "theory" },
     { label: "Zadania", icon: "graduation-cap", tab: "tasks" },
     { label: "Trener", icon: "flame", view: "view-dzial-trainer" }
-  ]
+  ],
+  funkcje: STANDARD_DZIAL_NAV,
+  planimetria: STANDARD_DZIAL_NAV,
+  ciagi: STANDARD_DZIAL_NAV,
+  probabilitata: STANDARD_DZIAL_NAV
 };
 
 // Aktywny widok — potrzebny do powrotu po obejrzeniu materiału
