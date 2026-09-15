@@ -9,7 +9,13 @@ import type { MaterialTab } from "./data/types";
 import { Icon } from "./components/icons";
 import Hub from "./components/Hub";
 import Materialy from "./components/Materialy";
-import Placeholder from "./components/Placeholder";
+import UnitCircle from "./components/UnitCircle";
+import TableView from "./components/TableView";
+import FormulaVerifier from "./components/FormulaVerifier";
+import TaskViewer from "./components/TaskViewer";
+import Calculators from "./components/Calculators";
+import TrygTrainer from "./features/trainer/tryg/TrygTrainer";
+import DzialTrainer from "./features/trainer/dzial/DzialTrainer";
 import "./lib/celebrate"; // rejestruje window.launchConfetti / window.trainerSounds
 
 type Route =
@@ -34,6 +40,26 @@ function routeFromState(state: unknown): Route {
   return dzial.start.kind === "material"
     ? { screen: "material", dzial: dzial.id, tab: "theory" }
     : { screen: "panel", dzial: dzial.id, panel: dzial.start.panel };
+}
+
+/** Panel → komponent. Wszystkie widoki legacy mają już porty React. */
+function renderPanel(panel: PanelId, dzial: Dzial) {
+  switch (panel) {
+    case "circle":
+      return <UnitCircle />;
+    case "table":
+      return <TableView />;
+    case "formulas":
+      return <FormulaVerifier />;
+    case "tasks-tryg":
+      return <TaskViewer />;
+    case "trainer-tryg":
+      return <TrygTrainer />;
+    case "trainer-dzial":
+      return <DzialTrainer dzial={dzial} />;
+    case "calculators":
+      return <Calculators />;
+  }
 }
 
 export default function App() {
@@ -159,7 +185,7 @@ export default function App() {
         )}
         {route.screen === "panel" && (
           <section id={PANEL_VIEW_IDS[route.panel]} className="view-panel active">
-            <Placeholder dzial={getDzial(route.dzial)} panel={route.panel} />
+            {renderPanel(route.panel, getDzial(route.dzial))}
           </section>
         )}
       </main>

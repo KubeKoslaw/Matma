@@ -27,10 +27,8 @@ const MATERIALS = [
     ]
   },
   {
-    // Uwaga: nazwa katalogu źródłowego zawiera literówkę („Analiityczna") —
-    // id materiału jest już poprawne; zmiana nazwy katalogu nastąpi osobno.
     id: "geometria-analityczna",
-    src: path.resolve(ROOT, "Geometria Analiityczna", "zadania_odpowiedzi_rozwiazania.md"),
+    src: path.resolve(ROOT, "Geometria Analityczna", "zadania_odpowiedzi_rozwiazania.md"),
     groups: [
       { id: "intro", match: /WPROWADZAJĄCE/i, label: "Wprowadzające" },
       { id: "m202250", match: /202|250/, label: "Maturalne 202–250" },
