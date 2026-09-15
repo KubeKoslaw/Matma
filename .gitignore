@@ -1,6 +1,12 @@
 # Node
 node_modules/
 
+# Dane generowane z markdownu (npm run build:materials)
+src/data/generated/
+
+# Zrzuty referencyjne / lokalne APK
+baseline-shots/
+
 # Android build outputs & machine-specific config
 android/.gradle/
 android/build/
@@ -21,3 +27,6 @@ wakelaptop
 
 # Reference photos (not needed to build or run)
 IMG_*.jpg
+
+# Build Vite trafia bezposrednio do assets WebView (budowany w CI, nie w git)
+android/app/src/main/assets/www/
