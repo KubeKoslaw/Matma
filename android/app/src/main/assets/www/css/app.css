@@ -2233,17 +2233,16 @@ body:not(.in-hub) #btn-back-hub {
 }
 
 .q-math-display {
-  padding: 10px;
+  padding: 12px;
   background: var(--bg-input);
   border-radius: var(--radius-sm);
   text-align: center;
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
   border: 1px solid var(--border-color);
   min-height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   overflow-x: auto;
   max-width: 100%;
 }
