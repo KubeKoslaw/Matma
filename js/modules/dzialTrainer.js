@@ -35,7 +35,7 @@ function escapeHtml(s) {
     .replace(/"/g, "&quot;");
 }
 
-// Mini-formatowanie treści zadań (bold + KaTeX przez renderMath).
+// Mini-formatowanie treści zadań (bold + KaTeX + nowa linia przez renderMath).
 // Matematyka ($...$ / $$...$$) schowana na placeholdery, żeby pogrubienia
 // nie rozdzielały par dolarów (inaczej KaTeX bierze całe zdania jako wzór).
 function miniMd(s) {
@@ -44,7 +44,11 @@ function miniMd(s) {
     math.push(m);
     return `\x00M${math.length - 1}\x00`;
   });
-  const formatted = escapeHtml(text).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  const formatted = escapeHtml(text)
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<strong>$1</strong>")
+    .replace(/^[\*\-]\s+(.*)$/gm, "• $1")
+    .replace(/\r?\n/g, "<br>");
   return formatted.replace(/\x00M(\d+)\x00/g, (_, i) => math[Number(i)]);
 }
 
@@ -76,7 +80,7 @@ const FORMULA_BANK = [
     d: ["A_1A_2 + B_1B_2 = 0", "A_1B_2 + A_2B_1 = 0", "A_1A_2 - B_1B_2 = 0"]
   },
   {
-    q: "Warunek prostopadłości prostych w postaci ogólnej:",
+    q: "Warunek prostopadłości prostych w postaci ogólnej ($A_1x + B_1y + C_1 = 0$ oraz $A_2x + B_2y + C_2 = 0$):",
     a: "A_1A_2 + B_1B_2 = 0",
     d: ["A_1B_2 - A_2B_1 = 0", "A_1A_2 - B_1B_2 = 0", "A_1B_2 + A_2B_1 = 0"]
   },
@@ -529,7 +533,8 @@ function showFlashcard() {
   document.getElementById("dt-cat").textContent = `Zadanie ${task.id}${task.flaggedR ? " [R]" : ""}`;
   document.getElementById("dt-prompt").textContent = "Rozwiąż w zeszycie, potem oceń siebie:";
   const mathEl = document.getElementById("dt-math");
-  mathEl.innerHTML = `<div style="text-align:left;">${miniMd(task.question)}</div>`;
+  mathEl.classList.add("q-math-flashcard");
+  mathEl.innerHTML = `<div class="flashcard-question-content">${miniMd(task.question)}</div>`;
   window.renderMath?.(mathEl);
 
   const optGrid = document.getElementById("dt-options");
