@@ -78,9 +78,6 @@ dependencies {
   androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.androidx.test.espresso.core)
 
-  // Kotlin Serialization
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-
   // Navigation
   implementation(libs.androidx.navigation3.ui)
   implementation(libs.androidx.navigation3.runtime)
