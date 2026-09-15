@@ -10,34 +10,53 @@ AUTH="Authorization: Bearer ${GH_TOKEN:?brak GH_TOKEN}"
 OUT="/tmp/apic"
 SHA_PY='import json,sys;print(json.load(sys.stdin)["sha"])'
 
+# api_fetch <metoda> <url> [plik_z_body] — z retry na chwilowe błędy sieci
+api_fetch() {
+  local method="$1" url="$2" body="${3:-}" out="$OUT/last_response.json" attempt
+  for attempt in 1 2 3 4 5; do
+    if [ -n "$body" ]; then
+      if curl -sS --fail-with-body -X "$method" -H "$AUTH" -d @"$body" "$url" > "$out" 2> "$OUT/err.txt"; then
+        return 0
+      fi
+    else
+      if curl -sS --fail-with-body -X "$method" -H "$AUTH" "$url" > "$out" 2> "$OUT/err.txt"; then
+        return 0
+      fi
+    fi
+    echo "  (próba $attempt nieudana: $(head -c 120 "$OUT/err.txt"))" >&2
+    sleep $((attempt * 3))
+  done
+  echo "BŁĄD: $method $url po 5 próbach" >&2
+  return 1
+}
+
 rm -rf "$OUT"
 mkdir -p "$OUT"
 
 python3 scripts/api_commit_prepare.py "$OUT"
 
-PARENT=$(curl -sf -H "$AUTH" "$API/git/ref/heads/$BRANCH" | python3 -c 'import json,sys;print(json.load(sys.stdin)["object"]["sha"])')
+api_fetch GET "$API/git/ref/heads/$BRANCH"
+PARENT=$(python3 -c 'import json,sys;print(json.load(sys.stdin)["object"]["sha"])' < "$OUT/last_response.json")
 echo "$PARENT" > "$OUT/parent.txt"
-BASE_TREE=$(curl -sf -H "$AUTH" "$API/git/commits/$PARENT" | python3 -c 'import json,sys;print(json.load(sys.stdin)["tree"]["sha"])')
+api_fetch GET "$API/git/commits/$PARENT"
+BASE_TREE=$(python3 -c 'import json,sys;print(json.load(sys.stdin)["tree"]["sha"])' < "$OUT/last_response.json")
 echo "$BASE_TREE" > "$OUT/base_tree.txt"
 
 : > "$OUT/shas.txt"
 while IFS=$'\t' read -r body path; do
-  for attempt in 1 2 3; do
-    if curl -sS --fail-with-body -H "$AUTH" -d @"$OUT/$body" "$API/git/blobs" > "$OUT/blob_out.json" 2> "$OUT/blob_err.txt"; then
-      SHA=$(python3 -c "$SHA_PY" < "$OUT/blob_out.json")
-      break
-    fi
-    echo "retry $attempt dla $path:"; cat "$OUT/blob_err.txt"; sleep 3
-  done
+  api_fetch POST "$API/git/blobs" "$OUT/$body"
+  SHA=$(python3 -c "$SHA_PY" < "$OUT/last_response.json")
   printf '%s\t%s\n' "$path" "$SHA" >> "$OUT/shas.txt"
 done < "$OUT/steps.txt"
 
 COMMIT_MSG="${COMMIT_MSG:?brak COMMIT_MSG}" python3 scripts/api_commit_finish.py "$OUT"
 
-TREE_SHA=$(curl -sf -H "$AUTH" -d @"$OUT/tree.json" "$API/git/trees" | python3 -c "$SHA_PY")
+api_fetch POST "$API/git/trees" "$OUT/tree.json"
+TREE_SHA=$(python3 -c "$SHA_PY" < "$OUT/last_response.json")
 sed -i "s|<TREE_SHA>|$TREE_SHA|" "$OUT/commit.json"
-COMMIT_SHA=$(curl -sf -H "$AUTH" -d @"$OUT/commit.json" "$API/git/commits" | python3 -c "$SHA_PY")
+api_fetch POST "$API/git/commits" "$OUT/commit.json"
+COMMIT_SHA=$(python3 -c "$SHA_PY" < "$OUT/last_response.json")
 sed -i "s|<COMMIT_SHA>|$COMMIT_SHA|" "$OUT/ref.json"
-curl -sf -X PATCH -H "$AUTH" -d @"$OUT/ref.json" "$API/git/refs/heads/$BRANCH" > /dev/null
+api_fetch PATCH "$API/git/refs/heads/$BRANCH" "$OUT/ref.json"
 
 echo "OK: $BRANCH -> $COMMIT_SHA"
