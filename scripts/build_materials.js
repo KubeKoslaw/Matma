@@ -46,6 +46,14 @@ const MATERIALS = [
     ]
   },
   {
+    id: "wyrazenia",
+    src: path.resolve(ROOT, "Wyrażenia Algebraiczne i Równania", "zadania_odpowiedzi_rozwiazania.md"),
+    groups: [
+      { id: "intro", match: /WPROWADZAJĄCE/i, label: "Wprowadzające" },
+      { id: "mat-wyr", match: /MATURALNE/i, label: "Maturalne" }
+    ]
+  },
+  {
     id: "planimetria",
     src: path.resolve(ROOT, "Planimetria", "zadania_odpowiedzi_rozwiazania.md"),
     groups: [

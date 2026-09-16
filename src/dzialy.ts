@@ -51,7 +51,8 @@ export interface Dzial {
 
 const STANDARD_NAV: NavTab[] = [
   { label: "Teoria i wzory", icon: "book-open", target: { kind: "material", tab: "theory" } },
-  { label: "Zadania", icon: "graduation-cap", target: { kind: "material", tab: "tasks" } }
+  { label: "Zadania", icon: "graduation-cap", target: { kind: "material", tab: "tasks" } },
+  { label: "Trener", icon: "flame", target: { kind: "panel", panel: "trainer-dzial" } }
 ];
 
 export const DZIALY: Dzial[] = [
@@ -71,6 +72,15 @@ export const DZIALY: Dzial[] = [
       { label: "Trener", icon: "flame", target: { kind: "panel", panel: "trainer-tryg" } },
       { label: "Kalkulator", icon: "calculator", target: { kind: "panel", panel: "calculators" } }
     ]
+  },
+  {
+    id: "wyrazenia",
+    title: "Wyrażenia algebraiczne i równania",
+    hubTitle: "Wyrażenia algebraiczne",
+    desc: "Teoria, procenty, równania i nierówności — z zadaniami",
+    icon: "variable",
+    start: { kind: "material" },
+    nav: STANDARD_NAV
   },
   {
     id: "funkcje",
@@ -97,10 +107,7 @@ export const DZIALY: Dzial[] = [
     desc: "Teoria, wzory i 129 zadań z rozwiązaniami",
     icon: "ruler",
     start: { kind: "material" },
-    nav: [
-      ...STANDARD_NAV,
-      { label: "Trener", icon: "flame", target: { kind: "panel", panel: "trainer-dzial" } }
-    ]
+    nav: STANDARD_NAV
   },
   {
     id: "ciagi",

@@ -5,7 +5,8 @@ import {
   ChartLine, Check, ChevronDown, ChevronRight, CircleDot, Construction,
   Crosshair, Crown, Dice5, Eye, FileCheck, Flame, Gem, GraduationCap, Heart,
   Lightbulb, ListChecks, ListOrdered, Loader, Map, Moon, Ruler, Search,
-  Shapes, Sigma, Sprout, Star, Sun, Table, Timer, Triangle, Volume2, VolumeX, X, Zap
+  Shapes, Sigma, Sprout, Star, Sun, Table, Timer, Triangle, Variable, Volume2,
+  VolumeX, X, Zap
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -47,6 +48,7 @@ export const ICONS = {
   table: Table,
   timer: Timer,
   triangle: Triangle,
+  variable: Variable,
   "volume-2": Volume2,
   "volume-x": VolumeX,
   x: X,
