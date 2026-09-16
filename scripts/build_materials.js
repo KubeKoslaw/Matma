@@ -39,7 +39,10 @@ const MATERIALS = [
     id: "funkcje",
     src: path.resolve(ROOT, "Funkcje", "zadania_odpowiedzi_rozwiazania.md"),
     groups: [
-      { id: "intro", match: /WPROWADZAJĄCE/i, label: "Wprowadzające" }
+      { id: "intro", match: /WPROWADZAJĄCE/i, label: "Wprowadzające" },
+      { id: "liniowa", match: /FUNKCJA LINIOWA/i, label: "Funkcja liniowa" },
+      { id: "kwadratowa", match: /FUNKCJA KWADRATOWA/i, label: "Funkcja kwadratowa" },
+      { id: "mat-funkcje", match: /ZADANIA MATURALNE/i, label: "Maturalne" }
     ]
   },
   {
