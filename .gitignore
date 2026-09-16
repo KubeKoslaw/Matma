@@ -30,3 +30,6 @@ IMG_*.jpg
 
 # Build Vite trafia bezposrednio do assets WebView (budowany w CI, nie w git)
 android/app/src/main/assets/www/
+
+# Zdjecia zadan z Matmapng (zrodlo tresci, poza gitem)
+matmapng/

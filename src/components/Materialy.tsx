@@ -4,11 +4,12 @@
 // (✓ Zrobione → konfetti + chibi + dźwięk — wzorzec trenera).
 // Dane: src/data/generated/material-*.json generowane przez `npm run build:materials`.
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { loadMaterial } from "../dzialy";
 import type { Dzial } from "../dzialy";
 import type { Material, MaterialTab, MaterialTask } from "../data/types";
 import { mdToHtml, inlineMd } from "../lib/md";
+import { renderMath } from "../lib/katex";
 import HtmlWithMath from "./HtmlWithMath";
 import {
   ENCOURAGEMENTS, celebrateSmall, celebrateGroup, celebrateAllTheory,
@@ -132,6 +133,12 @@ function Theory({
   const mascot = useMemo(randomMascot, []);
   const encouragement = useMemo(() => pick(ENCOURAGEMENTS), []);
   const [expanded, setExpanded] = useState<Set<number>>(() => new Set([0]));
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // Tytuły kart z inline-matematyką ($…$) renderowane przez KaTeX po montowaniu
+  useEffect(() => {
+    if (listRef.current) renderMath(listRef.current);
+  }, []);
 
   const readCount = Object.keys(progress.theory).filter((k) => progress.theory[Number(k)]).length;
   const pct = cards.length ? Math.round((readCount / cards.length) * 100) : 0;
@@ -162,7 +169,7 @@ function Theory({
           <div className="mat-progress-text">Przeczytane tematy: {readCount} z {cards.length}</div>
         </div>
       </div>
-      <div className="material-theory-list">
+      <div className="material-theory-list" ref={listRef}>
         {cards.map((card, idx) => {
           const isRead = !!progress.theory[idx];
           const isOpen = expanded.has(idx);
